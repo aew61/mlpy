@@ -54,17 +54,17 @@ class test_nb(unittest.TestCase):
         scary_node = classifier._feature_nodes["scary?"]
 
         conditions_table = numpy.array([[0.5, 0.5], [0.0, 1.0]], dtype=float)
-        self.assertEqual(numpy.array([[0.67, 0.33]]).all(),
-                         numpy.array([[numpy.round(x, 2) for x in lion_node._truth_table[0]]]).all())
-        self.assertEqual(conditions_table.all(),
+        self.assertTrue(numpy.array_equal(numpy.array([[0.67, 0.33]]),
+                         numpy.array([[numpy.round(x, 2) for x in lion_node._truth_table[0]]])))
+        self.assertTrue(numpy.array_equal(conditions_table,
                          numpy.array([[numpy.round(y, 2) for y in x]
-                                      for x in has_fur_node._truth_table]).all())
-        self.assertEqual(conditions_table.all(),
+                                      for x in has_fur_node._truth_table])))
+        self.assertTrue(numpy.array_equal(conditions_table,
                          numpy.array([[numpy.round(y, 2) for y in x]
-                                      for x in long_teeth_node._truth_table]).all())
-        self.assertEqual(conditions_table.all(),
+                                      for x in long_teeth_node._truth_table])))
+        self.assertTrue(numpy.array_equal(conditions_table,
                          numpy.array([[numpy.round(y, 2) for y in x]
-                                      for x in scary_node._truth_table]).all())
+                                      for x in scary_node._truth_table])))
 
     def _setup_lion_classifier(self):
         classifier = nb(feature_labels, class_label)
@@ -91,9 +91,12 @@ class test_nb(unittest.TestCase):
         expected_distribution = numpy.array([[0.0225, 0.001]], dtype=float)
         received_distribution = classifier.classify_pr(feature_vector)
 
-        print("expected:%s, received: %s" % (expected_distribution, received_distribution))
+        # print("expected:%s, received: %s" % (expected_distribution, received_distribution))
+        # print("rounded: %s" % numpy.array([numpy.round(y, 4) for y in received_distribution]))
 
-        self.assertEqual(expected_distribution.all(), received_distribution.all())
+        self.assertTrue(numpy.array_equal(expected_distribution,
+                                          numpy.array([numpy.round(y, 4)
+                                              for y in received_distribution])))
 
 
 if __name__ == "__main__":

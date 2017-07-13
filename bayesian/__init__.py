@@ -13,5 +13,5 @@ del _current_dir_
 from nb import nb  # noqa: E402
 import stdlabels  # noqa: E402
 from abstractlabel import abstractlabel  # noqa: E402
-from text_classifier import TextClassifier  # noqa: E402
+from text_classifier import text_classifier  # noqa: E402
 

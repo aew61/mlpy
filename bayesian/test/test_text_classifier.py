@@ -16,7 +16,7 @@ del _current_dir_
 
 
 # PYTHON PROJECT IMPORTS
-from text_classifier import TextClassifier
+from text_classifier import text_classifier
 from stdlabels import discrete_label
 
 
@@ -35,11 +35,15 @@ if __name__ == "__main__":
     def word_filter(example):
         return [x for x in re.sub(str([tokenization_string]), "", example.lower()).split() if len(x) > 3]
 
-    classifier = TextClassifier()
+    classifier = text_classifier()
     classifier.train(news_set, news_annotations,
                      class_label, word_filter)
 
     unknown_instance = "Even if I eat too much, it is not possible to lose some weight"
     print("classifications for %s: %s" % (class_label.get_all_states(),
                                           classifier.classify_text(unknown_instance)))
+
+    unknown_instances = ["Obama", "health"]
+    print("classifications for %s:\n%s" % (class_label.get_all_states(),
+                                          classifier.classify_text(unknown_instances)))
 

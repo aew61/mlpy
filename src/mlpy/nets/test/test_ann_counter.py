@@ -18,7 +18,7 @@ del _current_dir_
 
 
 # PYTHON PROJECT IMPORTS
-from nets import ann
+from nets import ANN
 
 def main():
     num_examples = 8
@@ -50,7 +50,7 @@ def main():
     print("training_labels:\n%s" % training_labels)
 
     # make the neural net
-    net = ann([num_features, 3, num_outputs])
+    net = ANN([num_features, 3, num_outputs], learning_rate=learning_rate, weight_decay_coeff=weight_decay_coeff)
 
     validation_features = numpy.array([[0, 0, 0]])
 
@@ -59,17 +59,15 @@ def main():
     iters = list([i for i in range(num_iterations)])
 
     for i in iters:
-        net.train_on_data_set(training_features, training_labels, learning_rate=learning_rate,
-                              weight_decay_coeff=weight_decay_coeff)
+        net.train(training_features, training_labels)
         # if i % 1000 == 0:
         #     print("training iteration %s" % i)
         #     print("validation set:%s" % validation_features)
         #     print("validation:%s" % net.feed_forward(validation_features))
-        costs.append(net.cost_function(training_features, training_labels,
-                                       weight_decay_coeff=weight_decay_coeff))
+        costs.append(net.cost_function(training_features, training_labels))
 
     print("validation set:%s" % validation_features)
-    print("validation:%s" % net.feed_forward(validation_features))
+    print("validation:%s" % net.predict(validation_features))
 
     lines = plt.plot(iters, costs)
     plt.show()

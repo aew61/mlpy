@@ -6,19 +6,18 @@ import random
 import sys
 
 
-_current_dir_ = os.path.abspath(os.path.dirname(__file__))
-_scripts_dir_ = os.path.join(_current_dir_, "..", "..")
-_dirs_to_add_ = list([_current_dir_, _scripts_dir_])
-for _dir_ in _dirs_to_add_:
+_cd_ = os.path.abspath(os.path.dirname(__file__))
+_scripts_dir_ = os.path.join(_cd_, "..", "..")
+for _dir_ in [_cd_, _scripts_dir_]:
     if _dir_ not in sys.path:
         sys.path.append(_dir_)
-del _dirs_to_add_
 del _scripts_dir_
-del _current_dir_
+del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-from nets import ann
+from nets import ANN
+
 
 def main():
     num_examples = 3
@@ -40,25 +39,22 @@ def main():
     print("training_labels:\n%s" % training_labels)
 
     # make the neural net
-    net = ann([num_features, 3, num_outputs])
+    net = ANN([num_features, 3, num_outputs], learning_rate=learning_rate,
+              weight_decay_coeff=weight_decay_coeff)
 
-    validation_features = numpy.array([[8, 3]])
+    validation_features = numpy.array([[0.8, 0.6]])
+    # validation_features = numpy.array([[8, 3]])
 
     costs = list()
     num_iterations = 10000
     iters = range(num_iterations)
 
     for i in iters:
-        # print("training iteration %s" % i)
-        net.train_on_data_set(training_features, training_labels, learning_rate=learning_rate,
-                              weight_decay_coeff=weight_decay_coeff)
-        # print("validation set:\n%s" % validation_features)
-        # print("validation:\n%s" % net.feed_forward(validation_features))
-        costs.append(net.cost_function(training_features, training_labels,
-                                       weight_decay_coeff=weight_decay_coeff))
+        net.train(training_features, training_labels)
+        costs.append(net.cost_function(training_features, training_labels))
 
     print("validation set:\n%s" % validation_features)
-    print("validation:\n%s" % net.feed_forward(validation_features))
+    print("validation:\n%s" % net.predict(validation_features))
 
     plt.plot(iters, costs)
     plt.show()

@@ -3,10 +3,10 @@ import os
 import sys
 
 
-_current_dir_ = os.path.abspath(os.path.dirname(__file__))
-if _current_dir_ not in sys.path:
-    sys.path.append(_current_dir_)
-del _current_dir_
+_cd_ = os.path.abspath(os.path.dirname(__file__))
+if _cd_ not in sys.path:
+    sys.path.append(_cd_)
+del _cd_
 
 
 # PYTHON PROJECT IMPORTS

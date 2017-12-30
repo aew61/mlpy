@@ -5,19 +5,18 @@ import random
 import sys
 
 
-_current_dir_ = os.path.abspath(os.path.dirname(__file__))
-_scripts_dir_ = os.path.join(_current_dir_, "..", "..")
-_dirs_to_add_ = list([_current_dir_, _scripts_dir_])
-for _dir_ in _dirs_to_add_:
+_cd_ = os.path.abspath(os.path.dirname(__file__))
+_scripts_dir_ = os.path.join(_cd_, "..", "..")
+for _dir_ in [_cd_, _scripts_dir_]:
     if _dir_ not in sys.path:
         sys.path.append(_dir_)
-del _dirs_to_add_
 del _scripts_dir_
-del _current_dir_
+del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-from nets import elm
+from nets import ELM
+
 
 def main():
     num_examples = 3
@@ -32,14 +31,14 @@ def main():
                                    [82],
                                    [93]], dtype=float)
 
-    training_features /= numpy.amax(training_features, axis=0)
-    training_labels /= 100
+    # training_features /= numpy.amax(training_features, axis=0)
+    # training_labels /= 100
 
     print("training_features:\n%s" % training_features)
     print("training_labels:\n%s" % training_labels)
 
     # make the neural net
-    net = elm([num_features, 3, num_outputs])
+    net = ELM([num_features, 3, num_outputs])
 
     validation_features = numpy.array([[8, 3]])
 
@@ -56,7 +55,7 @@ def main():
         #                                weight_decay_coeff=weight_decay_coeff))
 
     print("validation set:\n%s" % validation_features)
-    print("validation:\n%s" % net.classify(validation_features))
+    print("validation:\n%s" % net.predict(validation_features))
 
     # plt.plot(iters, costs)
     # plt.show()

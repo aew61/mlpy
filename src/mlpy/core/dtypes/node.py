@@ -7,9 +7,9 @@ import sys
 
 
 class Node(object):
-    def __init__(self, data, children=[]):
+    def __init__(self, data):
         self.data = data
-        self.children = children
+        self.children = list()
         self.parent = None
 
     def topdown(self):

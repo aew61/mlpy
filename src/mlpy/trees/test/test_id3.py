@@ -16,8 +16,9 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-import id3
+import dtreenodedata
 from features import ftypes
+import id3
 
 
 def test_ig(d, X, Y):
@@ -28,6 +29,27 @@ def test_ig(d, X, Y):
 
 def test_train(d, X, Y):
     d.train(X, Y)
+
+
+def test_partition(d, X, Y):
+    print("original data")
+    print(X)
+    print(Y)
+    for col in range(X.shape[1]):
+        print()
+        print("partitioning on column: %s" % col)
+        node = dtreenodedata.DTreeNodeData(col, ftypes.NOMINAL, numpy.arange(2))
+        for new_X, new_Y in node.partition_data(X, Y):
+            print("yielded data:")
+            print(new_X)
+            print(new_Y)
+
+
+def test_example(d):
+    X = numpy.array([[1, 0, 0],
+                     [1, 0, 1]])
+    for y in d.predict(X):
+        print(y)
 
 
 def main():
@@ -83,7 +105,11 @@ def main():
     test_ig(d, X, Y)
     print()
     print()
+    test_partition(d, X, Y)
+    print()
+    print()
     test_train(d, X, Y)
+    test_example(d)
     return d
 
 

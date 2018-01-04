@@ -20,12 +20,13 @@ from features import ftypes
 
 
 def base_test_func(partition_val, comparison_func, feature_id, x):
-    print(x)
+    # print(x)
     return comparison_func(x[feature_id], partition_val)
 
 
 def base_partition_func(partition_val, comparison_func, feature_id, X):
-    print(X)
+    # print(X)
+    # print("partitioning on feature value: %s" % partition_val)
     return comparison_func(X[:, feature_id], partition_val)
 
 
@@ -86,21 +87,21 @@ class DTreeNodeData(object):
         new_X = X
         new_Y = Y
 
-        print()
-        print("partition_data")
-        #print("x.shape: %s, y.shape: %s" % (new_X.shape, new_Y.shape))
-        #print("X: %s" % new_X)
-        #print("Y: %s" % new_Y)
-        print("feature type: %s" % self.feature_type)
+        # print()
+        # print("partition_data")
+        # print("x.shape: %s, y.shape: %s" % (new_X.shape, new_Y.shape))
+        # print("X: %s" % new_X)
+        # print("Y: %s" % new_Y)
+        # print("feature type: %s" % self.feature_type)
 
         for pf in self.partition_functions:
             pf_X = pf(new_X)
-            print("\t\t%s" % pf_X)
+            # print("\t\t%s" % pf_X)
             # print(new_X)
             # print(new_Y)
 
-            print("\tyielding data X: %s" % new_X[pf_X])
-            print("\tyielding data Y: %s" % new_Y[pf_X])
+            # print("\tyielding data X: %s" % new_X[pf_X])
+            # print("\tyielding data Y: %s" % new_Y[pf_X])
 
             yield new_X[pf_X], new_Y[pf_X]
             new_X = new_X[numpy.logical_not(pf_X)]

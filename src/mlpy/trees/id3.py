@@ -1,4 +1,5 @@
 # SYSTEM IMPORTS
+import numpy
 import os
 import sys
 
@@ -14,20 +15,25 @@ del _cd_
 
 # PYTHON PROJECT IMPORTS
 import core
-imoprt dtreebase
+import dtreebase
+import dtreenodedata
 
 
 class DTree(dtreebase.DTreeBase):
-    def __init__(self):
+    def __init__(self, feature_header={}):
+        super(DTree, self).__init__(feature_header=feature_header)
         self.tree_impl = core.dtypes.Tree()
         self.labels = list()
 
+    def id3_training_algorithm(self, X, Y, parent):
+        pass
+
     def _train(self, X, Y):
-        unique_labels = numpy.unique(y, axis=0)
+        unique_labels = numpy.unique(Y)
         for unique_label in unique_labels:
             self.labels.append(core.dtypes.Node(unique_label))
 
-        # order the features in X (columns are separate features) by their information gain
+        self.id3_training_algorithm(X, Y, None)
 
     def _predict_example(self, x):
         n = self.tree_impl.root
@@ -38,6 +44,6 @@ class DTree(dtreebase.DTreeBase):
         # go to the left child if the test is false, true otherwise
         while len(n.children) > 0:
             # test the current node
-            n = n.children[n.data(x)]  # interior nodes: n.data is a func pointer, label otherwise
+            n = n.children[n.data.test_example(x)]  # interior nodes: n.data is a func pointer, label otherwise
         return n.data
 

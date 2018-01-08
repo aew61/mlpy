@@ -65,7 +65,24 @@ class DTreeBase(core.Base):
         return numpy.unique(F)
 
     def get_continuous_partition_values(self, F, Y):
-        return numpy.unique(F)
+        # need to find all unique Fs that split Y into different classes....
+        # sort F (and Y) and then find the values of F where Y changes.
+
+        # returns the indices of F that make F be in sorted order
+        f_argsort = numpy.argsort(F)
+
+        sorted_f = F[f_argsort]
+        sorted_y = Y[f_argsort]
+
+        # now find the values of F where Y changes
+        y_change_indices = Y[:-1] != Y[1:]
+        diff_f_values = F[y_change_indices]
+
+        # find median between adjacent F values that have different classes
+        # This should also be in sorted order seeing as we started with a sorted order
+        partition_values = numpy.unique((diff_f_values[:-1] + diff_f_values[1:]) / 2)
+
+        return partition_values
 
     def get_hierarchical_partition_values(self, F, Y):
         return numpy.unique(F)

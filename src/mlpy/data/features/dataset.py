@@ -123,4 +123,6 @@ class Dataset(object):
             del self.feature_value_map[feature_name]
             self.fheader_obj.delete_feature(feature_name)
 
+    def get_dataset(self):
+        return self.fheader_obj.get_feature_names(), self.X, self.Y, self
 

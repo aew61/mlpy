@@ -4,13 +4,16 @@ import sys
 
 
 _cd_ = os.path.abspath(os.path.dirname(__file__))
-if _cd_  not in sys.path:
-    sys.path.append(_cd_)
+_src_dir_ = os.path.join(_cd_, "..")
+for _dir_ in [_cd_, _src_dir_]:
+    if _dir_  not in sys.path:
+        sys.path.append(_dir_)
+del _src_dir_
 del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-import features
+import loaders
 
 
 def load_spam_data():
@@ -18,12 +21,5 @@ def load_spam_data():
     names_file = "spam"
     data_file = names_file
 
-    header = features.FHeader(names_file, root_dir=cd)
-    header.create_header()
-    dataset = features.Dataset(data_file, header, root_dir=cd)
-    dataset._parse_data_file()
-    dataset.delete_feature("index")
-
-    return header.get_header(), dataset.X, dataset.Y, dataset
-
+    return loaders.c45.load_c45(names_file, data_file, cd)
 

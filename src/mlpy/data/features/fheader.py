@@ -58,7 +58,7 @@ class FHeader(object):
             if len(v) >= 0 and v[0] == "\"" and v[-1] == "\"":
                 v = v[1:-1].strip()
             f_vals.append(v)
-        return f_type, f_vals
+        return f_type, sorted(f_vals)
 
     def create_header(self):
         f_path = utils.find_file(self.names_file, self.root_dir)
@@ -73,6 +73,10 @@ class FHeader(object):
                         self.annotation_values = feature_values
                     else:
                         # add to dictionaries
+
+                        if feature_name in self.feature_names:
+                            raise ValueError("DUPLICATE FEATURE: feature [%s] already exists!" % feature_name)
+
                         self.feature_names.append(feature_name)
                         self.feature_value_map[feature_name] = feature_values
                         self.feature_type_map[feature_name] = feature_type
@@ -82,4 +86,14 @@ class FHeader(object):
 
     def get_header(self):
         return {i: self.feature_type_map[f_name] for i, f_name in enumerate(self.feature_names)}
+
+    def delete_feature(self, feature_name):
+        if feature_name in self.feature_names:
+            # need to update feature_names
+            # need to update feature_value_map
+            # need to update feature_type_map
+
+            self.feature_names.remove(feature_name)
+            del self.feature_value_map[feature_name]
+            del self.feature_type_map[feature_name]
 

@@ -23,8 +23,9 @@ PURE_LABELS = -1
 
 
 class DTreeBase(core.Base):
-    def __init__(self, feature_header={}):
+    def __init__(self, feature_header={}, max_depth=numpy.inf):
         self.feature_header = dict(feature_header)  # map data format indices -> feature type
+        self.max_depth = max_depth
 
     def entropy(self, Y_f):
         unique_vals, counts = numpy.unique(Y_f, return_counts=True)
@@ -59,12 +60,17 @@ class DTreeBase(core.Base):
         return max_f_index, max_f_gain
 
     def get_nominal_partition_values(self, F, Y):
-        return numpy.unique(F)
+        return numpy.unique(F), numpy.min(F), numpy.max(F)
 
     def get_ordered_partition_values(self, F, Y):
-        return numpy.unique(F)
+        return numpy.unique(F), numpy.min(F), numpy.max(F)
 
     def get_continuous_partition_values(self, F, Y):
+        assert(F.shape[0] == Y.shape[0])
+
+        f_min = numpy.min(F)
+        f_max = numpy.max(F)
+
         # need to find all unique Fs that split Y into different classes....
         # sort F (and Y) and then find the values of F where Y changes.
 
@@ -75,17 +81,32 @@ class DTreeBase(core.Base):
         sorted_y = Y[f_argsort]
 
         # now find the values of F where Y changes
-        y_change_indices = Y[:-1] != Y[1:]
-        diff_f_values = F[y_change_indices]
+        y_change_from_left = numpy.zeros(F.shape[0], dtype=bool)
+        y_change_from_right = numpy.zeros(F.shape[0], dtype=bool)
+        diff = Y[:-1] != Y[1:]
+        y_change_from_left[1:] = diff
+        y_change_from_right[:-1] = diff
 
-        # find median between adjacent F values that have different classes
-        # This should also be in sorted order seeing as we started with a sorted order
-        partition_values = numpy.unique((diff_f_values[:-1] + diff_f_values[1:]) / 2)
+        # diff_f_values = F[y_change_indices]
+        # print(diff_f_values)
 
-        return partition_values
+        # partition_values = diff_f_values
+
+        partition_values = numpy.unique((F[y_change_from_left] + F[y_change_from_right]) / 2)
+
+        """
+        if partition_values.shape[0] > 1:
+            # find median between adjacent F values that have different classes
+            # This should also be in sorted order seeing as we started with a sorted order
+            partition_values = numpy.unique((diff_f_values[:-1] + diff_f_values[1:]) / 2)
+        """
+
+        # print(partition_values)
+
+        return partition_values, f_min, f_max
 
     def get_hierarchical_partition_values(self, F, Y):
-        return numpy.unique(F)
+        return numpy.unique(F), numpy.min(F), numpy.max(F)
 
     def get_partition_values(self, f_index, F, Y):
         f_type = self.feature_header[f_index]

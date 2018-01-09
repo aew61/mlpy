@@ -22,6 +22,7 @@ def load_volcanoe_data():
     header.create_header()
     dataset = features.Dataset(data_file, header, root_dir=cd)
     dataset._parse_data_file()
+    dataset.delete_feature("index")
 
     return header.get_header(), dataset.X, dataset.Y, dataset
 

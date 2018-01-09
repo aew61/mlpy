@@ -86,11 +86,11 @@ class Dataset(object):
         self.num_examples = len(data)
 
         self.X = numpy.zeros(tuple([self.num_examples, self.num_features]))
-        self.Y = numpy.zeros(tuple([self.num_examples, 1]))
+        self.Y = numpy.zeros(tuple([self.num_examples]))
 
         for row_index, line in enumerate(data):
             feature_vals, annotation = self._parse_example(line)
-            self.Y[row_index][0] = annotation
+            self.Y[row_index] = annotation
             for col_index, feature_val in enumerate(feature_vals):
                 self.X[row_index][col_index] = feature_val
 
@@ -106,4 +106,21 @@ class Dataset(object):
             return self.annotation_value_func(val)
         else:
             return self.feature_value(name, val)
+
+    def delete_feature(self, feature_name):
+        # we want to delete this feature from our dataset (for whatever reason),
+        # we need to alter three 4 things:
+        #   1) self.X (remove the column of that feature)
+        #   2) self.num_features
+        #   3) self.feature_value_map
+        #   4) self.fheader_obj
+
+        if feature_name in self.fheader_obj.feature_names:
+            feature_col_index = self.fheader_obj.feature_names.index(feature_name)
+
+            self.X = numpy.delete(self.X, feature_col_index, axis=1)
+            self.num_features -= 1
+            del self.feature_value_map[feature_name]
+            self.fheader_obj.delete_feature(feature_name)
+
 

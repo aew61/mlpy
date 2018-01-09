@@ -32,14 +32,12 @@ class ID3DTree(dtreebase.DTreeBase):
             # choose the feature with max ig
             max_f_index, max_f_ig = self.max_information_gain(X, Y, ignored_features)
             if max_f_index != dtreebase.PURE_LABELS:
-                # print("partitioning on feature: %s" % max_f_index)
                 new_node = core.dtypes.Node(
                     dtreenodedata.DTreeNodeData(max_f_index,
                                                 self.feature_header[max_f_index],
                                                 *self.get_partition_values(max_f_index,
                                                                            X[:, max_f_index], Y)))
             else:  # pure node choose majority class
-                # print("PURE NODE")
                 unique_ys = numpy.unique(Y)
                 new_node = core.dtypes.Node(unique_ys[0])
 
@@ -52,16 +50,10 @@ class ID3DTree(dtreebase.DTreeBase):
             if max_f_index != dtreebase.PURE_LABELS:
                 # recursively call on partitioned data
                 for new_X, new_Y in new_node.data.partition_data(X, Y):
-                    # print(new_X)
-                    # print(new_Y)
-                    if new_Y.shape[0] == 0 or new_X.shape[0] == 0:
-                        print(new_X)
-                        print(new_Y)
                     self.id3_training_algorithm(new_X, new_Y, new_node, depth+1,
                                                 ignored_features=ignored_features|{max_f_index})
             
         else:
-            # print("NO MORE FEATURES")
             # unique vals of Y with counts
             unique_ys, counts = numpy.unique(Y, return_counts=True)
             majority_y = unique_ys[numpy.argmax(counts)]
@@ -72,15 +64,10 @@ class ID3DTree(dtreebase.DTreeBase):
                 parent.children.append(new_node)
 
     def _train(self, X, Y):
-        unique_labels = numpy.unique(Y)
-        for unique_label in unique_labels:
-            self.labels.append(core.dtypes.Node(unique_label))
-
         self.id3_training_algorithm(X, Y, None, 1)
 
     def _predict_example(self, x):
         n = self.tree_impl.root
-
         if n is None:
             return None
 

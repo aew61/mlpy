@@ -48,8 +48,6 @@ class DTreeBase(core.Base):
 
         unique_ys = numpy.unique(Y)
 
-        # print("Y: %s\nunique_Y: %s" % (Y, unique_ys))
-
         if len(unique_ys) > 1:  # data is not "pure" i.e. more than one label type
             for i, f in enumerate(X.T):  # for each column (each column is a feature)
                 if i not in ignore_features:
@@ -59,10 +57,7 @@ class DTreeBase(core.Base):
                         max_f_index = i
         return max_f_index, max_f_gain
 
-    def get_nominal_partition_values(self, F, Y):
-        return numpy.unique(F), numpy.min(F), numpy.max(F)
-
-    def get_ordered_partition_values(self, F, Y):
+    def get_discrete_partition_values(self, F, Y):
         return numpy.unique(F), numpy.min(F), numpy.max(F)
 
     def get_continuous_partition_values(self, F, Y):
@@ -87,22 +82,7 @@ class DTreeBase(core.Base):
         y_change_from_left[1:] = diff
         y_change_from_right[:-1] = diff
 
-        # diff_f_values = F[y_change_indices]
-        # print(diff_f_values)
-
-        # partition_values = diff_f_values
-
         partition_values = numpy.unique((F[y_change_from_left] + F[y_change_from_right]) / 2)
-
-        """
-        if partition_values.shape[0] > 1:
-            # find median between adjacent F values that have different classes
-            # This should also be in sorted order seeing as we started with a sorted order
-            partition_values = numpy.unique((diff_f_values[:-1] + diff_f_values[1:]) / 2)
-        """
-
-        # print(partition_values)
-
         return partition_values, f_min, f_max
 
     def get_hierarchical_partition_values(self, F, Y):
@@ -110,12 +90,13 @@ class DTreeBase(core.Base):
 
     def get_partition_values(self, f_index, F, Y):
         f_type = self.feature_header[f_index]
-        func = self.get_nominal_partition_values
+        func = self.get_discrete_partition_values
 
-        if f_type == ftypes.ORDERED:        func = self.get_ordered_partition_values
-        elif f_type == ftypes.CONTINUOUS:   func = self.get_continuous_partition_values
-        elif f_type == ftypes.HIERARCHICAL: func = self.hierarchical_partition_values
-        elif f_type != ftypes.NOMINAL:      raise Exception("feature [%s] (type [%s]) is not a recognized type" % (f_index, f_type))
+        if ftypes.is_continuous(f_type):   func = self.get_continuous_partition_values
+        elif ftypes.is_hierarchical(f_type): func = self.hierarchical_partition_values
+        elif not ftypes.is_discrete(f_type):
+            raise Exception("feature [%s] (type [%s]) is not a recognized type" %
+                (f_index, f_type))
 
         return func(F, Y)
 

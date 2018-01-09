@@ -22,6 +22,7 @@ __NAMES_FILE_EXTENSION__ = ".names"
 class FHeader(object):
     def __init__(self, names_file, root_dir="."):
         self.feature_names = list()
+        self.feature_index_map = dict()
         self.feature_value_map = dict()
         self.feature_type_map = dict()
         self.annotation_type = None
@@ -63,6 +64,7 @@ class FHeader(object):
     def create_header(self):
         f_path = utils.find_file(self.names_file, self.root_dir)
 
+        index = 0
         # now parse the .names file....first line should be the class
         with open(f_path, "r") as header_file:
             for i, line in enumerate(header_file):
@@ -80,12 +82,15 @@ class FHeader(object):
                         self.feature_names.append(feature_name)
                         self.feature_value_map[feature_name] = feature_values
                         self.feature_type_map[feature_name] = feature_type
+                        self.feature_index_map[feature_name] = index
+                        index += 1
 
     def get_feature_names(self):
         return list(self.feature_names)
 
     def get_header(self):
-        return {i: self.feature_type_map[f_name] for i, f_name in enumerate(self.feature_names)}
+        return {i: self.feature_type_map[f_name] for f_name, i in self.feature_index_map.items()}
+        # return {i: self.feature_type_map[f_name] for i, f_name in enumerate(self.feature_names)}
 
     def delete_feature(self, feature_name):
         if feature_name in self.feature_names:
@@ -96,4 +101,5 @@ class FHeader(object):
             self.feature_names.remove(feature_name)
             del self.feature_value_map[feature_name]
             del self.feature_type_map[feature_name]
+            del self.feature_index_map[feature_name]
 

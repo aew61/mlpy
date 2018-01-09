@@ -13,7 +13,6 @@ del _cd_
 import activation_functions  # noqa: E402
 import bayesian  # noqa: E402
 import data  # noqa: E402
-import data_partitioning  # noqa: E402
 import nets as nets  # noqa: E402
 import processes  # noqa: E402
 import qlearn  # noqa: E402

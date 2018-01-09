@@ -10,8 +10,11 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
+import cross_validation
 import features
+import formatting
 import loaders
+import partitioning
 from spam import load_spam_data
 from volcanoes import load_volcanoe_data
 from voting import load_voting_data

@@ -60,58 +60,31 @@ class DTreeNodeData(object):
     def _create_continuous_funcs(self, sorted_p_values):
         if sorted_p_values.shape[0] == 0:
             raise Exception("Cannot partition feature with no partition values!")
-        # elif sorted_p_values.shape[0] == 1:
-        #     print("feature [%s] of type [%s] has 1 partition value: [%s]" %
-        #         (self.feature_id, self.feature_type, sorted_p_values[0]))
 
         for p in sorted_p_values[:-1]:
             self.partition_functions.append(functools.partial(base_partition_func,
                 p, operator.le, self.feature_id))
             self.test_functions.append(functools.partial(base_test_func,
                 p, operator.le, self.feature_id))
-        # self.partition_functions.append(functools.partial(base_partition_func,
-        #     partition_values[-2], operator.gt, self.feature_id))
-        # self.test_functions.append(functools.partial(base_test_func,
-        #     partition_values[-2], operator.gt, self.feature_id))
         self._create_continuous_funcs_max_val(sorted_p_values[-1])
-        """
-            print("feature [%s] of type [%s] has 1 partition value: [%s]" %
-                (self.feature_id, self.feature_type, partition_values[0]))
-            p = sorted_p_values[0]
-            self.partition_functions.append(functools.partial(base_partition_func,
-                p, operator.le, self.feature_id))
-            self.test_functions.append(functools.partial(base_test_func,
-                p, operator.le, self.feature_id))
-            self.partition_functions.append(functools.partial(base_partition_func,
-                p, operator.gt, self.feature_id))
-            self.test_functions.append(functools.partial(base_test_func,
-                p, operator.gt, self.feature_id))
-        """
-        
+
 
     def create_partition_functions(self):
         # we know that the partition_values are sorted...but enforce that here
         partition_values = numpy.sort(self.partition_values)
         try:
-            if self.feature_type == ftypes.NOMINAL:
-                for p in partition_values:
-                    self.partition_functions.append(functools.partial(base_partition_func,
-                        p, operator.eq, self.feature_id))
-                    self.test_functions.append(functools.partial(base_test_func,
-                        p, operator.eq, self.feature_id))
-            
-            elif self.feature_type == ftypes.ORDERED:
+            if ftypes.is_discrete(self.feature_type):
                 for p in partition_values:
                     self.partition_functions.append(functools.partial(base_partition_func,
                         p, operator.eq, self.feature_id))
                     self.test_functions.append(functools.partial(base_test_func,
                         p, operator.eq, self.feature_id))
 
-            elif self.feature_type == ftypes.CONTINUOUS:
+            elif ftypes.is_continuous(self.feature_type):
                 # so complex it justifies a separate function
                 self._create_continuous_funcs(partition_values)
 
-            elif self.feature_type == ftypes.HIERARCHICAL:
+            elif ftypes.is_hierarchical(self.feature_type):
                 for p in partition_values:
                     self.partition_functions.append(lambda val: True)
                     self.test_functions.append(lambda val: 0)
@@ -133,28 +106,11 @@ class DTreeNodeData(object):
         new_X = X
         new_Y = Y
 
-        # print()
-        # print("partition_data")
-        # print("x.shape: %s, y.shape: %s" % (new_X.shape, new_Y.shape))
-        # print("X: %s" % new_X)
-        # print("Y: %s" % new_Y)
-        # print("feature type: %s" % self.feature_type)
-
         for pf in self.partition_functions:
             pf_X = pf(new_X)
-            # print("\t\t%s" % pf_X)
-            # print(new_X)
-            # print(new_Y)
-
-            if new_Y.shape[0] == 0:
-                F = X[:, self.feature_id]
-                print("\tNO ANNOTATIONS YIELDED")
-                print("\t\tfeature: [%s] of type: [%s] has min: [%s], max: [%s]" %
-                    (self.feature_id, self.feature_type, numpy.min(F), numpy.max(F)))
-            # print("\tyielding data X: %s" % new_X[pf_X])
-            # print("\tyielding data Y: %s" % new_Y[pf_X])
 
             yield new_X[pf_X], new_Y[pf_X]
+
             new_X = new_X[numpy.logical_not(pf_X)]
             new_Y = new_Y[numpy.logical_not(pf_X)]
 

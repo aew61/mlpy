@@ -12,4 +12,5 @@ del _cd_
 # PYTHON PROJECT IMPORTS
 from node import Node  # noqa: E402
 from tree import Tree  # noqa: E402
+from twowaydict import TwoWayDict  # noqa: E402
 

@@ -17,7 +17,7 @@ del _cd_
 
 # PYTHON PROJECT IMPORTS
 import dtreenodedata
-from features import ftypes
+from data.features import ftypes
 import id3
 
 

@@ -16,7 +16,7 @@ del _cd_
 # PYTHON PROJECT IMPORTS
 import core
 import dtreenodedata
-from features import ftypes
+from data.features import ftypes
 
 
 PURE_LABELS = -1

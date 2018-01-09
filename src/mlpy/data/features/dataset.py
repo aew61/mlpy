@@ -124,5 +124,5 @@ class Dataset(object):
             self.fheader_obj.delete_feature(feature_name)
 
     def get_dataset(self):
-        return self.fheader_obj.get_feature_names(), self.X, self.Y, self
+        return self.fheader_obj.get_header(), self.X, self.Y, self
 

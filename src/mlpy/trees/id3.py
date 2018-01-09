@@ -19,9 +19,9 @@ import dtreebase
 import dtreenodedata
 
 
-class DTree(dtreebase.DTreeBase):
+class ID3DTree(dtreebase.DTreeBase):
     def __init__(self, feature_header={}, max_depth=numpy.inf):
-        super(DTree, self).__init__(feature_header=feature_header, max_depth=max_depth)
+        super(ID3DTree, self).__init__(feature_header=feature_header, max_depth=max_depth)
         self.tree_impl = core.dtypes.Tree()
         self.labels = list()
 

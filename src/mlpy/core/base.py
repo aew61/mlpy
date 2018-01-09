@@ -15,6 +15,7 @@ class Base(metaclass=ABCMeta):
 
     def train(self, X, y):
         self._train(X, y)
+        return self
 
     @abstractmethod
     def _predict_example(self, x):

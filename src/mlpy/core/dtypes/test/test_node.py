@@ -25,6 +25,8 @@ def check_tree(t):
     assert(t.children[1].children[0].data == 5)
     assert(t.children[1].children[1].data == 6)
 
+    print([n.data for n in t.interiors()])
+
 
 def build_tree(l):
     n = Node(l[0])

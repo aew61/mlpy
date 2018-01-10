@@ -101,5 +101,11 @@ class FHeader(object):
             self.feature_names.remove(feature_name)
             del self.feature_value_map[feature_name]
             del self.feature_type_map[feature_name]
+
+            index = self.feature_index_map[feature_name]
             del self.feature_index_map[feature_name]
+            # need to adjust all other indexes to reflect the change
+            for f_name in self.feature_index_map.keys():
+                if self.feature_index_map[f_name] > index:
+                    self.feature_index_map[f_name] -= 1
 

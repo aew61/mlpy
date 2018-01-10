@@ -36,7 +36,7 @@ class Node(object):
         if len(self.children) > 0:
             yield self
             for c in self.children:
-                for i in self.interiors():
+                for i in c.interiors():
                     yield i
 
     def append_child(self, node):

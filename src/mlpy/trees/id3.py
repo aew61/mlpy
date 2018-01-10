@@ -20,10 +20,20 @@ import dtreenodedata
 
 
 class ID3DTree(dtreebase.DTreeBase):
-    def __init__(self, feature_header={}, max_depth=numpy.inf):
-        super(ID3DTree, self).__init__(feature_header=feature_header, max_depth=max_depth)
+    def __init__(self, feature_header={}, max_depth=numpy.inf, use_gain_ratio=False):
+        super(ID3DTree, self).__init__(feature_header=feature_header,
+            max_depth=max_depth, use_gain_ratio=use_gain_ratio)
         self.tree_impl = core.dtypes.Tree()
         self.labels = list()
+
+    def _check_tree(self):
+        # at each node, make sure that the number of test functions == number of children
+        for n in self.tree_impl.interiors():
+            if len(n.data.test_functions) != len(n.children):
+                print("node for feature [%s] of type [%s] has [%s] test funcs but [%s] children" %
+                    (n.data.feature_id, n.data.feature_type,
+                     len(n.data.test_functions), len(n.children)))
+                raise Exception()
 
     def id3_training_algorithm(self, X, Y, parent, depth, ignored_features=set()):
         # print("training algorithm")
@@ -50,12 +60,22 @@ class ID3DTree(dtreebase.DTreeBase):
             if max_f_index != dtreebase.PURE_LABELS:
                 # recursively call on partitioned data
                 for new_X, new_Y in new_node.data.partition_data(X, Y):
+                    # if new_X.shape[0] == 0:
+                    #     print("feature [%s] of type [%s]" %
+                    #         (max_f_index, self.feature_header[max_f_index]))
+                    #     print(X.shape, Y.shape)
+                    #     print(X[:, max_f_index])
+                    #     print()
+
                     self.id3_training_algorithm(new_X, new_Y, new_node, depth+1,
                                                 ignored_features=ignored_features|{max_f_index})
             
         else:
             # unique vals of Y with counts
             unique_ys, counts = numpy.unique(Y, return_counts=True)
+            if unique_ys.shape[0] == 0:
+                print(X, Y)
+
             majority_y = unique_ys[numpy.argmax(counts)]
             new_node = core.dtypes.Node(majority_y)
             if parent is None:
@@ -65,6 +85,7 @@ class ID3DTree(dtreebase.DTreeBase):
 
     def _train(self, X, Y):
         self.id3_training_algorithm(X, Y, None, 1)
+        self._check_tree()
 
     def _predict_example(self, x):
         n = self.tree_impl.root

@@ -23,9 +23,10 @@ PURE_LABELS = -1
 
 
 class DTreeBase(core.Base):
-    def __init__(self, feature_header={}, max_depth=numpy.inf):
+    def __init__(self, feature_header={}, max_depth=numpy.inf, use_gain_ratio=False):
         self.feature_header = dict(feature_header)  # map data format indices -> feature type
         self.max_depth = max_depth
+        self.use_gain_ratio = use_gain_ratio
 
     def entropy(self, Y_f):
         unique_vals, counts = numpy.unique(Y_f, return_counts=True)
@@ -51,14 +52,19 @@ class DTreeBase(core.Base):
         if len(unique_ys) > 1:  # data is not "pure" i.e. more than one label type
             for i, f in enumerate(X.T):  # for each column (each column is a feature)
                 if i not in ignore_features:
-                    f_gain = self.information_gain(X[:,i], Y)
+                    f_gain = self.information_gain(X[:, i], Y)
+
+                    if self.use_gain_ratio:
+                        f_gain /= self.entropy(X[:, i])
+
                     if f_gain > max_f_gain:
                         max_f_gain = f_gain
                         max_f_index = i
         return max_f_index, max_f_gain
 
     def get_discrete_partition_values(self, F, Y):
-        return numpy.unique(F), numpy.min(F), numpy.max(F)
+        vals, counts = numpy.unique(F, return_counts=True)
+        return vals, numpy.min(F), numpy.max(F)
 
     def get_continuous_partition_values(self, F, Y):
         assert(F.shape[0] == Y.shape[0])
@@ -86,7 +92,7 @@ class DTreeBase(core.Base):
         return partition_values, f_min, f_max
 
     def get_hierarchical_partition_values(self, F, Y):
-        return numpy.unique(F), numpy.min(F), numpy.max(F)
+        return self.get_discrete_partition_values(F, Y)
 
     def get_partition_values(self, f_index, F, Y):
         f_type = self.feature_header[f_index]

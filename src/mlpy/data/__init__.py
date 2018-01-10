@@ -10,7 +10,6 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-import cross_validation
 import features
 import formatting
 import loaders

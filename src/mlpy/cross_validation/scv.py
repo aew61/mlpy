@@ -19,44 +19,36 @@ from data.formatting import create_folds
 
 
 class StratifiedCrossValidator(core.Base):
-    def __init__(self, num_folds, clf_type, feature_header={}):
+    def __init__(self, num_folds, clf_instantiation_func):
         self.num_folds = num_folds
-        self.feature_header = feature_header
-        self.clf_type = clf_type
         self.clf_predictions = list()
         self.clf_expected_outputs = list()
         self.clfs = list()
-        self.clf_args = {"feature_header": self.feature_header}
-
-    def load(self, clf_type=None, clf_args={}):
-        self.clf_args.update(clf_args)
-        if clf_type is not None:
-            self.clf_type = clf_type
-        return self
+        self.clf_instantiation_func = clf_instantiation_func
 
     def _train(self, X, Y):
         folds = create_folds(X, Y, self.num_folds)
         for fold_num in range(self.num_folds):
-            print("training fold: %s" % fold_num)
+            # print("training fold: %s" % fold_num)
             test_X, test_Y = folds[fold_num]
             train_X = list()
             train_Y = list()
 
-            print(" - building data")
+            # print(" - building data")
             for i, (X_, Y_), in enumerate(folds):
                 if i != fold_num:
                     train_X.append(X_)
                     train_Y.append(Y_)
             train_X = numpy.concatenate(tuple(train_X), axis=0)
             train_Y = numpy.concatenate(tuple(train_Y), axis=0)
-            print("\tdone")
+            # print("\tdone")
 
-            print(" - training classifier")
-            clf = self.clf_type(**self.clf_args).train(train_X, train_Y)
-            print("\tdone")
-            print(" - predicting data")
+            # print(" - training classifier")
+            clf = self.clf_instantiation_func(fold_num, self.num_folds).train(train_X, train_Y)
+            # print("\tdone")
+            # print(" - predicting data")
             self.clf_predictions.append(clf.predict(test_X))
-            print("\tdone")
+            # print("\tdone")
             self.clf_expected_outputs.append(test_Y)
             self.clfs.append(clf)
             

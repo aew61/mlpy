@@ -22,15 +22,17 @@ import scv
 
 
 def main():
-    h, X, Y, _ = data.load_voting_data()
-    d = trees.id3.ID3DTree
+    h, X, Y, _ = data.load_volcanoe_data()
     num_folds = 5
     max_depth = 3
-    gain_ratio = True
+    gain_ratio = False
 
     clf_args = {"feature_header": h, "max_depth": max_depth, "use_gain_ratio": gain_ratio}
 
-    c = scv.StratifiedCrossValidator(num_folds, d, feature_header=h).load(clf_args=clf_args).train(X, Y)
+    def instantiate_id3(fold_num, max_folds):
+        return trees.id3.ID3DTree(**clf_args)
+
+    c = scv.StratifiedCrossValidator(num_folds, instantiate_id3).train(X, Y)
     for Y_pred, Y_act in zip(c.clf_predictions, c.clf_expected_outputs):
         print(numpy.sum(numpy.array(Y_pred) == Y_act) / Y_act.shape[0])
 

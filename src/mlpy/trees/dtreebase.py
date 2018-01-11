@@ -23,7 +23,10 @@ PURE_LABELS = -1
 
 
 class DTreeBase(core.Base):
-    def __init__(self, feature_header={}, max_depth=numpy.inf, use_gain_ratio=False):
+    def __init__(self, feature_header=None, max_depth=numpy.inf, use_gain_ratio=False):
+        if feature_header is None:
+            feature_header = dict()
+
         self.feature_header = dict(feature_header)  # map data format indices -> feature type
         self.max_depth = max_depth
         self.use_gain_ratio = use_gain_ratio

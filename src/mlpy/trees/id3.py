@@ -20,7 +20,7 @@ import dtreenodedata
 
 
 class ID3DTree(dtreebase.DTreeBase):
-    def __init__(self, feature_header={}, max_depth=numpy.inf, use_gain_ratio=False):
+    def __init__(self, feature_header=None, max_depth=numpy.inf, use_gain_ratio=False):
         super(ID3DTree, self).__init__(feature_header=feature_header,
             max_depth=max_depth, use_gain_ratio=use_gain_ratio)
         self.tree_impl = core.dtypes.Tree()
@@ -35,7 +35,7 @@ class ID3DTree(dtreebase.DTreeBase):
                      len(n.data.test_functions), len(n.children)))
                 raise Exception()
 
-    def id3_training_algorithm(self, X, Y, parent, depth, ignored_features=set()):
+    def id3_training_algorithm(self, X, Y, parent, depth, ignored_features):
         # print("training algorithm")
         new_node = None
         if X.shape[0] > 0 and depth < self.max_depth:
@@ -68,7 +68,7 @@ class ID3DTree(dtreebase.DTreeBase):
                     #     print()
 
                     self.id3_training_algorithm(new_X, new_Y, new_node, depth+1,
-                                                ignored_features=ignored_features|{max_f_index})
+                                                ignored_features|{max_f_index})
             
         else:
             # unique vals of Y with counts
@@ -84,7 +84,7 @@ class ID3DTree(dtreebase.DTreeBase):
                 parent.children.append(new_node)
 
     def _train(self, X, Y):
-        self.id3_training_algorithm(X, Y, None, 1)
+        self.id3_training_algorithm(X, Y, None, 1, set())
         self._check_tree()
 
     def _predict_example(self, x):

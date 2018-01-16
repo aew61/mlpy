@@ -10,4 +10,6 @@ del _cd_
 
 # PYTHON PROJECT IMPORTS
 import id3
+import leid3
+import ppyid3
 

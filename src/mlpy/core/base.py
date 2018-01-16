@@ -1,5 +1,6 @@
 # SYSTEM IMPORTS
 from abc import ABCMeta, abstractmethod
+import numpy
 
 
 # PYTHON PROJECT IMPORTS
@@ -14,7 +15,13 @@ class Base(metaclass=ABCMeta):
         return self
 
     def predict(self, X):
-        return [self._predict_example(x) for x in X]
+        first_out = self._predict_example(X[0])
+        out = numpy.zeros(X.shape[0], dtype=type(first_out))
+        out[0] = first_out
+        for i, x in enumerate(X[1:]):
+            out[i] = self._predict_example(x)
+        return out
+        # return [self._predict_example(x) for x in X]
 
     def predict_generator(self, X):
         for x in X:

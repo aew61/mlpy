@@ -24,11 +24,11 @@ import ppyid3
 
 
 def main():
-    name_list = ["voting data", "volcanoe data"]
-    data_list = [data.load_voting_data(), data.load_volcanoe_data()]
+    name_list = ["voting data", "volcanoe data", "spam data"]
+    data_list = [data.load_voting_data(), data.load_volcanoe_data(), data.load_spam_data()]
 
-    clf_name_list = ["opt id3", "leid3", "ppyid3"]
-    clf_type_list = [id3.ID3Tree, leid3.ID3Tree, ppyid3.ID3Tree]
+    clf_name_list = ["opt id3", "  leid3", " ppyid3"]
+    clf_type_list = [id3.ID3Tree, leid3.LEID3Tree, ppyid3.PPYID3Tree]
     for name, dataset in zip(name_list, data_list):
         print(name)
         h, X, Y, _ = dataset
@@ -37,7 +37,10 @@ def main():
             t1 = time.time()
             t.train(X, Y)
             t2 = time.time() - t1
-            print(" - {0} took {1:.3}s to train with {2:.4} accuracy".format(clf_name, t2, numpy.sum(t.predict(X) == Y) / Y.shape[0]))
+            if t2 > 60:
+                print(" - {0} took {1:.3}min to train with {2:.4} accuracy".format(clf_name, t2 / 60, numpy.sum(t.predict(X) == Y) / Y.shape[0]))
+            else:
+                print(" - {0} took {1:.3}sec to train with {2:.4} accuracy".format(clf_name, t2, numpy.sum(t.predict(X) == Y) / Y.shape[0]))
             # if clf_name == "opt id3":
             #     cont_lt_count = 0.0
             #     cont_lt_total = 0.0

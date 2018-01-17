@@ -87,7 +87,7 @@ class MidOptDTreeBase(core.Base):
         # now find the values of F where Y changes
         y_change_from_left = numpy.zeros(F.shape[0], dtype=bool)
         y_change_from_right = numpy.zeros(F.shape[0], dtype=bool)
-        diff = Y[:-1] != Y[1:]
+        diff = Y[:-1, 0] != Y[1:, 0]
         y_change_from_left[1:] = diff
         y_change_from_right[:-1] = diff
 

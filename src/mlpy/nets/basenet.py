@@ -19,10 +19,11 @@ import core
 
 
 class BaseNet(core.Base):
-    def __init__(self, layer_sizes, seed=None, activation_func_ptr=sigmoid, ignore_biases=False):
+    def __init__(self, layer_sizes, seed=None, afunc_ptrs=None, ignore_biases=False, ignore_overflow=False):
         super(BaseNet, self).__init__()
         numpy.random.seed(seed)
 
+        self.ignore_overflow = ignore_overflow
         self.ignore_biases = ignore_biases
 
         filtered_layers = [l for l in layer_sizes if l > 0]
@@ -33,6 +34,9 @@ class BaseNet(core.Base):
                                      for z in range(row * col)]).reshape(row, col)
                         for row, col in zip(filtered_layers[:-1], filtered_layers[1:])]
 
+        # if self.layers[-1] == 1:
+        #     self.weights[-1] = self.weights[-1].reshape(-1)
+
         if self.ignore_biases:
             self.biases = [numpy.zeros(tuple([1, n])) for n in filtered_layers[1:]]
         else:
@@ -40,22 +44,36 @@ class BaseNet(core.Base):
                                         for z in range(n)]).reshape(1, n)
                            for n in filtered_layers[1:]]
 
-        self.activation_func_ptr = activation_func_ptr
+        if afunc_ptrs is None:
+            self.afunc_ptr = sigmoid
+        else:
+            self.afunc_ptr = afunc_ptrs[0]
 
     def _traverse(self, weights, biases):
         return zip(weights, biases)
 
     def feed_forward(self, X):
-        a = X
-        for weight, bias in self._traverse(self.weights, self.biases):
-            a = self.activation_func_ptr(numpy.dot(a, weight) + bias)
-        return a
+        old_settings = dict()
+        if not self.ignore_overflow:
+            old_settings = numpy.seterr(over="raise")
+        else:
+            old_settings = numpy.seterr(over="ignore")
+
+        try:
+            a = X
+            for weight, bias in self._traverse(self.weights, self.biases):
+                a = self.afunc_ptr(numpy.dot(a, weight) + bias)
+            return a
+        except FloatingPointError:
+            raise FloatingPointError("Overflow occured, please scale features")
+        finally:
+            numpy.seterr(**old_settings)
 
     def _predict_example(self, x):
-        if not hasattr(x, "shape") or len(x.shape) == 1:
-            return self.feed_forward(numpy.array([x]))
-        else:
-            return self.feed_forward(x)
+        # if not hasattr(x, "shape") or len(x.shape) == 1:
+        #     return self.feed_forward(numpy.array([x]))
+        # else:
+        return self.feed_forward(x)
 
     def predict(self, X):
         return self.feed_forward(X)

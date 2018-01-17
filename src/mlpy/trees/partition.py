@@ -109,6 +109,7 @@ class ContinuousPartition(object): # PartitionBase):
     def create_partition_values(self, F, Y):
         assert(F.shape[0] == Y.shape[0])
 
+        # flat_Y = Y.reshape(-1)
         f_max = numpy.max(F)
 
         # need to find all unique Fs that split Y into different classes....
@@ -123,7 +124,7 @@ class ContinuousPartition(object): # PartitionBase):
         # now find the values of F where Y changes
         y_change_from_left = numpy.zeros(F.shape[0], dtype=bool)
         y_change_from_right = numpy.zeros(F.shape[0], dtype=bool)
-        diff = Y[:-1] != Y[1:]
+        diff = Y[:-1, 0] != Y[1:, 0]
         y_change_from_left[1:] = diff
         y_change_from_right[:-1] = diff
 

@@ -9,7 +9,7 @@ if _cd_ not in sys.path:
 del _cd_
 
 # PYTHON PROJECT IMPORTS
-import id3
-import leid3
-import ppyid3
+from id3 import ID3Tree
+from leid3 import LEID3Tree
+from ppyid3 import PPYID3Tree
 

@@ -19,9 +19,9 @@ import midoptdtreebase
 import ppypartition
 
 
-class ID3Tree(midoptdtreebase.MidOptDTreeBase):
+class PPYID3Tree(midoptdtreebase.MidOptDTreeBase):
     def __init__(self, feature_header=None, max_depth=numpy.inf, use_gain_ratio=False):
-        super(ID3Tree, self).__init__(feature_header=feature_header,
+        super(PPYID3Tree, self).__init__(feature_header=feature_header,
             max_depth=max_depth, use_gain_ratio=use_gain_ratio)
         self.tree_impl = core.dtypes.Tree()
         self.labels = list()

@@ -16,7 +16,7 @@ class Base(metaclass=ABCMeta):
 
     def predict(self, X):
         first_out = self._predict_example(X[0])
-        out = numpy.zeros(X.shape[0], dtype=type(first_out))
+        out = numpy.zeros((X.shape[0], 1), dtype=type(first_out))
         out[0] = first_out
         for i, x in enumerate(X[1:]):
             out[i] = self._predict_example(x)

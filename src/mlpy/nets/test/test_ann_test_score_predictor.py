@@ -19,6 +19,27 @@ del _cd_
 from nets import ANN
 
 
+def plot_decision_boundary(pred_func, X, Y):
+    x_min = numpy.min(X[:, 0]) - 0.5
+    x_max = numpy.max(X[:, 0]) + 0.5
+
+    y_min = numpy.min(X[:, 1]) - 0.5
+    y_max = numpy.max(X[:, 1]) + 0.5
+
+    h = 0.01
+
+    XX, YY = numpy.meshgrid(numpy.arange(x_min, x_max, h), numpy.arange(y_min, y_max, h))
+
+    Z = pred_func(numpy.c_[XX.ravel(), YY.ravel()])
+    # print(Z.shape)
+    # print(numpy.max(Z), numpy.min(Z))
+    Z = Z.reshape(XX.shape)
+
+    plt.contourf(XX, YY, Z, cmap=plt.cm.Spectral)
+    # print(Y.reshape(-1).shape)
+    plt.scatter(X[:, 0], X[:, 1], c=Y.reshape(-1), cmap=plt.cm.Spectral)
+
+
 def main():
     num_examples = 3
     num_features = 2
@@ -50,11 +71,18 @@ def main():
     print("---------------")
     print()
 
+    print("---------------")
+    print("biases shapes:")
+    for b in net.biases:
+        print(b.shape)
+    print("---------------")
+    print()
+
     validation_features = numpy.array([[0.8, 0.6]])
     # validation_features = numpy.array([[8, 3]])
 
     costs = list()
-    num_iterations = 10000
+    num_iterations = 10000  # 10000
     iters = range(num_iterations)
 
     for i in iters:
@@ -63,6 +91,9 @@ def main():
 
     print("validation set:\n%s" % validation_features)
     print("validation:\n%s" % net.predict(validation_features))
+
+    plot_decision_boundary(lambda X: net.predict(X), X, Y)
+    plt.show()
 
     # plt.plot(iters, costs)
     # plt.show()

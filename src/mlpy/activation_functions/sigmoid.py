@@ -10,6 +10,7 @@ def sigmoid(X):
 
 
 def sigmoid_prime(X):
-    z = sigmoid(X)
-    return z * (1 - z)
+    Z = sigmoid(X)
+    # assert(numpy.array_equal(Z*(1-Z), (1-Z)*Z))
+    return Z*(1 - Z)
 

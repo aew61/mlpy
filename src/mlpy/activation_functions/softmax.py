@@ -7,6 +7,8 @@ import numpy
 
 def softmax(X):
     Y = numpy.exp(X)
+    if len(Y.shape) == 1:
+        return Y / numpy.sum(Y)
     return Y / numpy.sum(Y, axis=1, keepdims=True)
 
 

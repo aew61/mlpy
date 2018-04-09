@@ -37,7 +37,7 @@ class ANN(basenet.BaseNet):
                 # (numpy.sum([numpy.sum(w ** 2) for w in self.weights])) # + sum([sum(b ** 2) for b in self._biases]))
         return cost + weight_decay_term
 
-    def back_propogate(self, X, Y):
+    def back_propagate(self, X, Y):
         old_settings = dict()
         if not self.ignore_overflow:
             old_settings = numpy.seterr(over="raise")
@@ -75,7 +75,7 @@ class ANN(basenet.BaseNet):
             numpy.seterr(**old_settings)
 
     def _train(self, X, Y):
-        dLdWs, dLdBs = self.back_propogate(X, Y)
+        dLdWs, dLdBs = self.back_propagate(X, Y)
         self.weights = [w - self.learning_rate * dLdW for w, dLdW in zip(self.weights, dLdWs)]
         self.biases = [b - self.learning_rate * dLdB for b, dLdB in zip(self.biases, dLdBs)]
 

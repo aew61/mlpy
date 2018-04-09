@@ -25,12 +25,10 @@ class BaseNet(core.Base):
 
         self.ignore_overflow = ignore_overflow
         self.num_layers = len(layers)
-        self.weights = [numpy.array([numpy.random.uniform(-1.0, 1.0)
-                                     for z in range(row * col)]).reshape(row, col)
+        self.weights = [numpy.random.uniform(-1.0, 1.0, size=(row, col,))
                         for row, col in zip(layers[:-1], layers[1:])]
 
-        self.biases = [numpy.array([numpy.random.uniform(-1.0, 1.0)
-                                    for z in range(n)]).reshape(1, n)
+        self.biases = [numpy.random.uniform(-1.0, 1.0, size=(1, n,))
                        for n in layers[1:]]
 
         if afuncs is None:

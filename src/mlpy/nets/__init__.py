@@ -10,7 +10,8 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-from ann import ANN  # noqa: E402
+from ann import ann  # noqa: E402
 from basenet import BaseNet  # noqa: E402
-from elm import ELM  # noqa: E402
+from elm import elm  # noqa: E402
+from rnn import rnn
 

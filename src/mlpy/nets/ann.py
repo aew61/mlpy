@@ -18,10 +18,10 @@ import basenet
 import core
 
 
-class ANN(basenet.BaseNet):
+class ann(basenet.BaseNet):
     def __init__(self, layers, seed=None, afuncs=None, afunc_primes=None,
                  learning_rate=1.0, weight_decay_coeff=0.0, ignore_overflow=False):
-        super(ANN, self).__init__(layers, seed=seed, afuncs=afuncs,
+        super(ann, self).__init__(layers, seed=seed, afuncs=afuncs,
                                   afunc_primes=afunc_primes, ignore_overflow=ignore_overflow)
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay_coeff

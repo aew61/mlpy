@@ -14,13 +14,12 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-import rnn
+from lstm import lstm
 
 
 def main():
     num_features = 10
     output_size = 10
-    hidden_size = 10
 
     X = numpy.zeros((10, 10))
     Y = numpy.zeros((10, 10))
@@ -34,16 +33,31 @@ def main():
 
     num_iterations = 100
 
-    net = rnn.rnn(num_features, output_size, hidden_size=hidden_size, seed=10)
+    net = lstm(num_features, output_size, seed=10)
+    print(net.predict(X))
+
+    """
     for i in range(num_iterations):
         net.train([X], [Y])
+        # print(net.predict(X))
         loss = net.loss_function([X], [Y])
         print(loss)
+        
         if numpy.isnan(loss):
-            #print(net.V)
-            #print(net.W)
-            #print(net.U)
-            return
+        """"""
+            print(net.F_w)
+            print(net.I_w)
+            print(net.C_w)
+            print(net.Of_w)
+        """"""
+        """"""
+            print(net.F_b)
+            print(net.I_b)
+            print(net.C_b)
+            print(net.Of_b)
+        """"""
+           return
+    """
     # net.S = numpy.zeros(net.S.shape)
     #print(net.W)
     #print()
@@ -52,12 +66,17 @@ def main():
     #print(net.U)
     #print()
 
+    # print(net.F_w)
+    # print(net.I_w)
+    # print(net.C_w)
+    # print(net.Of_w)
+
+    # print(net.F_b)
+    # print(net.I_b)
+    # print(net.C_b)
+    # print(net.Of_b)
+    net.reset()
     print(net.predict(X))
-    #dist = net.predict_proba(X)
-    #print(dist)
-    #P = numpy.zeros(dist.shape)
-    #P[range(X.shape[0]), numpy.argmax(dist, axis=1)] = 1
-    #print(P)
 
 
 if __name__ == "__main__":

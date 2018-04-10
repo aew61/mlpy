@@ -17,7 +17,7 @@ del _cd_
 
 # PYTHON PROJECT IMPORTS
 import activation_functions as af
-from nets import ANN
+from nets import ann
 
 
 def plot_decision_boundary(pred_func, X, Y):
@@ -53,7 +53,7 @@ def plot_nets(hidden_layers, nets, X, Y):
 def train(layers, learning_rate, weight_decay_coeff, training_iter, X, Y):
     Y_ = numpy.zeros((Y.shape[0], layers[-1]))
     Y_[range(Y.shape[0]), Y] = 1
-    n = ANN(layers, learning_rate=learning_rate, weight_decay_coeff=weight_decay_coeff,
+    n = ann(layers, learning_rate=learning_rate, weight_decay_coeff=weight_decay_coeff,
             afuncs=[af.tanh, af.softmax],
             afunc_primes=[af.tanh_prime, af.softmax_prime]
            )

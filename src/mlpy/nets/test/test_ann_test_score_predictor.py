@@ -16,7 +16,7 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-from nets import ANN
+from nets import ann
 
 
 def plot_decision_boundary(pred_func, X, Y):
@@ -59,7 +59,7 @@ def main():
     print()
 
     # make the neural net
-    net = ANN([num_features, 3, num_outputs], learning_rate=learning_rate,
+    net = ann([num_features, 3, num_outputs], learning_rate=learning_rate,
               weight_decay_coeff=weight_decay_coeff)
 
     print(net.predict(X))

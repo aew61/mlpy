@@ -317,7 +317,8 @@ class lstm(basernn.BaseRNN):
         delta_h_t = numpy.zeros(self.hidden_size)
         for t in range(time)[::-1]:
             delta_ot_h = numpy.dot(delta[t], self.W_o)
-            delta_h_t += numpy.multiply(delta_ot_h, self.afuncs[1](Ss[t]))
+            delta_h_t += delta_ot_h
+            delta_h_t = numpy.multiply(delta_h_t, self.afuncs[1](Ss[t]))
             delta_s_t += numpy.multiply(numpy.multiply(delta_h_t, Hfs[t]),
                                         self.afunc_primes[1](Ss[t]))
             self.back_prop_hidden_filter_gate(delta_s_t, delta_h_t, Hf_args[t],
@@ -328,6 +329,7 @@ class lstm(basernn.BaseRNN):
                                       X[t], dLdis)
             self.back_prop_forget_gate(delta_s_t, delta_h_t, Ss[t-1], F_args[t], Hs[t-1],
                                        X[t], dLdfs)
+            delta_s_t = numpy.multiply(delta_s_t, Fs[t])
         return dLdfs, dLdis, dLdcs, dLdhfs, dLdOs
     """
 

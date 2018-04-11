@@ -31,7 +31,7 @@ def main():
     # print(X)
     # print(Y)
 
-    num_iterations = 400
+    num_iterations = 3000
 
     net = lstm(num_features, output_size, seed=10)
     print(net.predict(X))

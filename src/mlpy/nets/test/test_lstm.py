@@ -31,12 +31,12 @@ def main():
     # print(X)
     # print(Y)
 
-    num_iterations = 100
+    num_iterations = 400
 
     net = lstm(num_features, output_size, seed=10)
     print(net.predict(X))
 
-    """
+    """"""
     for i in range(num_iterations):
         net.train([X], [Y])
         # print(net.predict(X))
@@ -44,20 +44,22 @@ def main():
         print(loss)
         
         if numpy.isnan(loss):
-        """"""
-            print(net.F_w)
-            print(net.I_w)
-            print(net.C_w)
-            print(net.Of_w)
-        """"""
-        """"""
-            print(net.F_b)
-            print(net.I_b)
-            print(net.C_b)
-            print(net.Of_b)
-        """"""
-           return
-    """
+            # """"""
+            print(net.W_f)
+            print(net.W_i)
+            print(net.W_c)
+            print(net.W_hf)
+            print(net.W_o)
+            # """"""
+            # """"""
+            print(net.b_f)
+            print(net.b_i)
+            print(net.b_c)
+            print(net.b_hf)
+            print(net.b_o)
+            # """"""
+            return
+    """"""
     # net.S = numpy.zeros(net.S.shape)
     #print(net.W)
     #print()

@@ -30,14 +30,17 @@ class rnn(basernn.BaseRNN):
         self.V = numpy.random.uniform(-1.0, 1.0, size=(output_size, hidden_size,))
         self.S = numpy.zeros(hidden_size)
 
+        self.b_s = numpy.random.uniform(-1.0, 1.0, size=(hidden_size))
+        self.b_o = numpy.random.uniform(-1.0, 1.0, size=(output_size))
+
         if self.afuncs is None:
             self.afuncs = [af.tanh, af.softmax]
         if self.afunc_primes is None:
             self.afunc_primes = [af.tanh_prime, af.softmax_prime]
 
     def compute_layer(self, X):
-        self.S = self.afuncs[0](numpy.dot(self.U, X) + numpy.dot(self.W, self.S))
-        return self.afuncs[1](numpy.dot(self.V, self.S))
+        self.S = self.afuncs[0](numpy.dot(self.U, X) + numpy.dot(self.W, self.S) + self.b_s)
+        return self.afuncs[1](numpy.dot(self.V, self.S) + self.b_o)
 
     def reset(self):
         self.S[:] = 0
@@ -45,34 +48,35 @@ class rnn(basernn.BaseRNN):
     def back_propagate_through_time(self, X, Y):
         assert(X.shape[1] == self.input_size)
         time = X.shape[0]
+        O_args = numpy.zeros((time, self.output_size))
         Os = numpy.zeros((time, self.output_size))
+        S_args = numpy.zeros((time, self.hidden_size))
         Ss = numpy.zeros((time+1, self.hidden_size))
         Ss[-1] = numpy.zeros(self.hidden_size)
         for t in range(time):
-            Ss[t] = self.afuncs[0](numpy.dot(self.U, X[t]) + numpy.dot(self.W, Ss[t-1]))
-            Os[t] = self.afuncs[1](numpy.dot(self.V, Ss[t]))
+            S_args[t] = numpy.dot(self.U, X[t]) + numpy.dot(self.W, Ss[t-1]) + self.b_s
+            Ss[t] = self.afuncs[0](S_args[t])
+            O_args[t] = numpy.dot(self.V, Ss[t]) + self.b_o
+            Os[t] = self.afuncs[1](O_args[t])
 
         dLdU = numpy.zeros(self.U.shape)
         dLdV = numpy.zeros(self.V.shape)
         dLdW = numpy.zeros(self.W.shape)
 
+        dLdb_s = numpy.zeros(self.b_s.shape)
+        dLdb_o = numpy.zeros(self.b_o.shape)
+
         delta = Os - Y
-        # print(delta.shape)
         for t in range(time):  # walk backwards through time
-            dLdV += numpy.multiply(numpy.outer(delta[t].T, Ss[t]), self.afunc_primes[1](Ss[t]))
-            # dLdV += numpy.multiply(delta[t], self.afunc_primes[1](Ss[t]))
-            # print(delta[t].shape)
-            # print(self.V.T.shape)
-            # print((Ss[t+1] ** 2).shape)
-            delta_t = numpy.multiply(numpy.dot(self.V.T, delta[t]),
-                                     self.afunc_primes[0](Ss[t]))
-            # delta_t = self.V.T.dot(delta[t]) * (1 - (Ss[t+1] ** 2))
-            # print("delta_t.shape")
+            delta_t = numpy.multiply(delta[t], self.afunc_primes[1](O_args[t]))
+            dLdV += numpy.outer(delta_t, Ss[t])
+            dLdb_o += delta_t
+            delta_t = numpy.multiply(numpy.dot(self.V.T, delta_t),
+                                     self.afunc_primes[0](S_args[t]))
             for bptt_step in range(max(0, t-self.bptt_truncate), t+1)[::-1]:
-                # print(delta_t)
+                dLdb_s += delta_t
                 dLdW += numpy.outer(delta_t, Ss[bptt_step-1])
-                dLdU[:, numpy.argmax(X[bptt_step])] += delta_t
-                # dLdU += delta_t
+                dLdU += numpy.outer(delta_t, X[bptt_step])
                 delta_t = numpy.multiply(numpy.dot(self.W.T, delta_t),
                                          self.afunc_primes[0](Ss[bptt_step-1]))
                 # print(delta_t.shape)

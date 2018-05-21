@@ -72,7 +72,7 @@ def main():
 
     X, Y = dsets.make_moons(200, noise=0.2)
 
-    hidden_layers = [1, 2, 3, 4, 5, 20, 30, 50]  # [1, 2, 3, 4, 5, 20, 30, 50]
+    hidden_layers = [1, 2, 3, 4, 5, 20, 30, 50, 100]  # [1, 2, 3, 4, 5, 20, 30, 50]
 
     ns = list()
     for h in hidden_layers:

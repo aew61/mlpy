@@ -19,7 +19,7 @@ from activation_functions import sigmoid
 import basenet
 
 
-class ELM(basenet.BaseNet):
+class elm(basenet.BaseNet):
     def __init__(self, layer_sizes, seed=None, afunc_ptrs=None, ignore_overflow=False):
         super(ELM, self).__init__(layer_sizes, seed=seed, afunc_ptrs=afunc_ptrs, ignore_overflow=ignore_overflow)
         assert(self.num_layers == 3)

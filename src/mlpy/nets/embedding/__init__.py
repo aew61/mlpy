@@ -11,6 +11,6 @@ del _cd_
 
 # PYTHON PROJECT IMPORTS
 from cbow import cbow
-from skipgram import skipgram
-from word2vec import word2vec
+# from skipgram import skipgram
+# from word2vec import word2vec
 

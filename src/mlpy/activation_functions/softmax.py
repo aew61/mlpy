@@ -6,10 +6,15 @@ import numpy
 
 
 def softmax(X):
-    Y = numpy.exp(X)
-    if len(Y.shape) == 1:
+    # this general process of Y = exp(Y - max(X)); return Y / sum(Y) is equivalent
+    # to exp(X) / sum(exp(X)), but is more numerically stable.
+
+    if len(X.shape) == 1:
+        Y = numpy.exp(X - numpy.max(X))
         return Y / numpy.sum(Y)
-    return Y / numpy.sum(Y, axis=1, keepdims=True)
+    else:
+        Y = numpy.exp(X - numpy.max(X, axis=1, keepdims=True))
+        return Y / numpy.sum(Y, axis=1, keepdims=True)
 
 
 def softmax_prime(X):

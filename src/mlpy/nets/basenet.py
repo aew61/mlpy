@@ -38,7 +38,7 @@ class BaseNet(core.Base):
             self.afuncs = list(afuncs)
             self.afunc_primes = list(afunc_primes)
 
-    def change_settings(new_settings):
+    def change_settings(self, new_settings):
         return numpy.seterr(**new_settings)
 
     def feed_forward(self, X):

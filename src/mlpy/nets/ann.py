@@ -37,6 +37,18 @@ class ann(basenet.BaseNet):
                 # (numpy.sum([numpy.sum(w ** 2) for w in self.weights])) # + sum([sum(b ** 2) for b in self._biases]))
         return cost + weight_decay_term
 
+    def complete_feed_forward(self, X):
+        zs = list()
+        as_ = list([X])
+        a = X
+        z = None
+        for afunc, weight, bias in zip(self.afuncs, self.weights, self.biases):
+            z = numpy.dot(a, weight) + bias
+            zs.append(z)
+            a = afunc(z)
+            as_.append(a)
+        return zs, as_
+
     def back_propagate(self, X, Y):
         new_settings = dict({"over": "ignore"})
         if not self.ignore_overflow:
@@ -45,15 +57,7 @@ class ann(basenet.BaseNet):
 
         try:
             # feed forward but remember each layer's computations as we go
-            zs = list()
-            as_ = list([X])
-            a = X
-            z = None
-            for afunc, weight, bias in zip(self.afuncs, self.weights, self.biases):
-                z = numpy.dot(a, weight) + bias
-                zs.append(z)
-                a = afunc(z)
-                as_.append(a)
+            zs, as_ = self.complete_feed_forward(X)
 
             dLdWs = [None for _ in self.weights]
             dLdBs = [None for _ in self.biases]

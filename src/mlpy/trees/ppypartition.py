@@ -34,7 +34,7 @@ def base_partition_func(partition_val, comparison_func, feature_id, X):
     return out
 
 
-class DTreeNodeData(object):
+class PPYPartition(object):
     def __init__(self, feature_id, feature_type, partition_values, f_min, f_max):
         self.feature_id = feature_id
         self.feature_type = feature_type

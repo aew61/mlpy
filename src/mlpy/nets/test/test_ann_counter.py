@@ -18,7 +18,7 @@ del _current_dir_
 
 
 # PYTHON PROJECT IMPORTS
-from nets import ANN
+from nets import ann
 
 def main():
     num_examples = 8
@@ -50,7 +50,7 @@ def main():
     print("training_labels:\n%s" % training_labels)
 
     # make the neural net
-    net = ANN([num_features, 3, num_outputs], learning_rate=learning_rate, weight_decay_coeff=weight_decay_coeff)
+    net = ann([num_features, 3, num_outputs], learning_rate=learning_rate, weight_decay_coeff=weight_decay_coeff)
 
     validation_features = numpy.array([[0, 0, 0]])
 

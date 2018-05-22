@@ -16,7 +16,28 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-from nets import ANN
+from nets import ann
+
+
+def plot_decision_boundary(pred_func, X, Y):
+    x_min = numpy.min(X[:, 0]) - 0.5
+    x_max = numpy.max(X[:, 0]) + 0.5
+
+    y_min = numpy.min(X[:, 1]) - 0.5
+    y_max = numpy.max(X[:, 1]) + 0.5
+
+    h = 0.01
+
+    XX, YY = numpy.meshgrid(numpy.arange(x_min, x_max, h), numpy.arange(y_min, y_max, h))
+
+    Z = pred_func(numpy.c_[XX.ravel(), YY.ravel()])
+    # print(Z.shape)
+    # print(numpy.max(Z), numpy.min(Z))
+    Z = Z.reshape(XX.shape)
+
+    plt.contourf(XX, YY, Z, cmap=plt.cm.Spectral)
+    # print(Y.reshape(-1).shape)
+    plt.scatter(X[:, 0], X[:, 1], c=Y.reshape(-1), cmap=plt.cm.Spectral)
 
 
 def main():
@@ -25,39 +46,57 @@ def main():
     num_outputs = 1
     learning_rate = 0.005
     weight_decay_coeff = 0.0
-    training_features = numpy.array([[3, 5],
-                                     [5, 1],
-                                     [10, 2]], dtype=float)
-    training_labels = numpy.array([[75],
-                                   [82],
-                                   [93]], dtype=float)
+    X = numpy.array([[3, 5],
+                     [5, 1],
+                     [10, 2]], dtype=float)
+    Y = numpy.array([[75], [82], [93]], dtype=float)
 
-    training_features /= numpy.amax(training_features, axis=0)
-    training_labels /= 100
+    X /= numpy.amax(X, axis=0)
+    Y /= 100
 
-    print("training_features:\n%s" % training_features)
-    print("training_labels:\n%s" % training_labels)
+    print("X:\n%s" % X)
+    print("Y:\n%s" % Y)
+    print()
 
     # make the neural net
-    net = ANN([num_features, 3, num_outputs], learning_rate=learning_rate,
+    net = ann([num_features, 3, num_outputs], learning_rate=learning_rate,
               weight_decay_coeff=weight_decay_coeff)
+
+    print(net.predict(X))
+
+    print("---------------")
+    print("weights shapes:")
+    for w in net.weights:
+        print(w.shape)
+    print("---------------")
+    print()
+
+    print("---------------")
+    print("biases shapes:")
+    for b in net.biases:
+        print(b.shape)
+    print("---------------")
+    print()
 
     validation_features = numpy.array([[0.8, 0.6]])
     # validation_features = numpy.array([[8, 3]])
 
     costs = list()
-    num_iterations = 10000
+    num_iterations = 10000  # 10000
     iters = range(num_iterations)
 
     for i in iters:
-        net.train(training_features, training_labels)
-        costs.append(net.cost_function(training_features, training_labels))
+        net.train(X, Y)
+        costs.append(net.cost_function(X, Y))
 
     print("validation set:\n%s" % validation_features)
     print("validation:\n%s" % net.predict(validation_features))
 
-    plt.plot(iters, costs)
+    plot_decision_boundary(lambda X: net.predict(X), X, Y)
     plt.show()
+
+    # plt.plot(iters, costs)
+    # plt.show()
 
 if __name__ == "__main__":
     main()

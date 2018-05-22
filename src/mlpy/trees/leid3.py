@@ -15,13 +15,13 @@ del _cd_
 
 # PYTHON PROJECT IMPORTS
 import core
-import dtreebase
-import partition
+import midoptdtreebase
+import lepartition
 
 
-class ID3Tree(dtreebase.DTreeBase):
+class LEID3Tree(midoptdtreebase.MidOptDTreeBase):
     def __init__(self, feature_header=None, max_depth=numpy.inf, use_gain_ratio=False):
-        super(ID3Tree, self).__init__(feature_header=feature_header,
+        super(LEID3Tree, self).__init__(feature_header=feature_header,
             max_depth=max_depth, use_gain_ratio=use_gain_ratio)
         self.tree_impl = core.dtypes.Tree()
         self.labels = list()
@@ -42,15 +42,16 @@ class ID3Tree(dtreebase.DTreeBase):
         if X.shape[0] > 0 and depth < self.max_depth:
             # choose the feature with max ig
             max_f_index, max_f_ig = self.max_information_gain(X, Y, ignored_features)
-            if max_f_index != dtreebase.PURE_LABELS:
+            if max_f_index != midoptdtreebase.PURE_LABELS:
                 #new_node = core.dtypes.Node(
                 #    dtreenodedata.DTreeNodeData(max_f_index,
                 #                                self.feature_header[max_f_index],
                 #                                *self.get_partition_values(max_f_index,
                 #                                                           X[:, max_f_index], Y)))
                 new_node = core.dtypes.Node(
-                    partition.create_partition(max_f_index, self.feature_header[max_f_index],
-                                               X[:, max_f_index], Y))
+                    lepartition.LEPartition(max_f_index, self.feature_header[max_f_index],
+                                            *self.get_partition_values(max_f_index,
+                                                                       X[:, max_f_index], Y)))
             else:  # pure node choose majority class
                 unique_ys = numpy.unique(Y)
                 new_node = core.dtypes.Node(unique_ys[0])
@@ -61,7 +62,7 @@ class ID3Tree(dtreebase.DTreeBase):
             else:
                 parent.children.append(new_node)
 
-            if max_f_index != dtreebase.PURE_LABELS:
+            if max_f_index != midoptdtreebase.PURE_LABELS:
                 # recursively call on partitioned data
                 for new_X, new_Y in new_node.data.partition_data(X, Y):
                     # if new_X.shape[0] == 0:

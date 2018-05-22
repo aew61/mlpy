@@ -15,7 +15,7 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-from mlpy.nets import ELM
+from mlpy.nets import elm
 
 def sinc(x):
     # the sinc function: y(x) = {sin(x) / x if x != 0, 1 otherwise}
@@ -49,7 +49,7 @@ def main():
 
    num_hidden_neurons = 20
    layers = [1, num_hidden_neurons, 1]
-   classifier = ELM(layers)
+   classifier = elm(layers)
 
    classifier.train(training_examples, training_annotations)
    outputs = classifier.predict(validation_examples)

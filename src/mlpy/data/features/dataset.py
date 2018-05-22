@@ -86,11 +86,11 @@ class Dataset(object):
         self.num_examples = len(data)
 
         self.X = numpy.zeros(tuple([self.num_examples, self.num_features]))
-        self.Y = numpy.zeros(tuple([self.num_examples]))
+        self.Y = numpy.zeros(tuple([self.num_examples, 1]))
 
         for row_index, line in enumerate(data):
             feature_vals, annotation = self._parse_example(line)
-            self.Y[row_index] = annotation
+            self.Y[row_index][0] = annotation
             for col_index, feature_val in enumerate(feature_vals):
                 self.X[row_index][col_index] = feature_val
 

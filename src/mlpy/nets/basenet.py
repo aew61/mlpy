@@ -14,48 +14,54 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-from activation_functions import sigmoid
+from activation_functions import sigmoid, sigmoid_prime
 import core
 
 
 class BaseNet(core.Base):
-    def __init__(self, layer_sizes, seed=None, activation_func_ptr=sigmoid, ignore_biases=False):
+    def __init__(self, layers, seed=None, afuncs=None, afunc_primes=None, ignore_overflow=False):
         super(BaseNet, self).__init__()
         numpy.random.seed(seed)
 
-        self.ignore_biases = ignore_biases
+        self.ignore_overflow = ignore_overflow
+        self.num_layers = len(layers)
+        self.weights = [numpy.random.uniform(-1.0, 1.0, size=(row, col,))
+                        for row, col in zip(layers[:-1], layers[1:])]
 
-        filtered_layers = [l for l in layer_sizes if l > 0]
-        self.num_layers = len(filtered_layers)
-        self.layers = filtered_layers
+        self.biases = [numpy.random.uniform(-1.0, 1.0, size=(1, n,))
+                       for n in layers[1:]]
 
-        self.weights = [numpy.array([numpy.random.uniform(-1.0, 1.0)
-                                     for z in range(row * col)]).reshape(row, col)
-                        for row, col in zip(filtered_layers[:-1], filtered_layers[1:])]
-
-        if self.ignore_biases:
-            self.biases = [numpy.zeros(tuple([1, n])) for n in filtered_layers[1:]]
+        if afuncs is None:
+            self.afuncs = [sigmoid for _ in range(len(self.weights))]
+            self.afunc_primes = [sigmoid_prime for _ in range(len(self.weights))]
         else:
-            self.biases = [numpy.array([numpy.random.uniform(-1.0, 1.0)
-                                        for z in range(n)]).reshape(1, n)
-                           for n in filtered_layers[1:]]
+            self.afuncs = list(afuncs)
+            self.afunc_primes = list(afunc_primes)
 
-        self.activation_func_ptr = activation_func_ptr
-
-    def _traverse(self, weights, biases):
-        return zip(weights, biases)
+    def change_settings(self, new_settings):
+        return numpy.seterr(**new_settings)
 
     def feed_forward(self, X):
-        a = X
-        for weight, bias in self._traverse(self.weights, self.biases):
-            a = self.activation_func_ptr(numpy.dot(a, weight) + bias)
-        return a
+        new_settings = dict({"over": "ignore"})
+        if not self.ignore_overflow:
+            new_settings["over"] = "raise"
+        old_settings = self.change_settings(new_settings)
+
+        try:
+            a = X
+            for afunc, weight, bias in zip(self.afuncs, self.weights, self.biases):
+                a = afunc(numpy.dot(a, weight) + bias)
+            return a
+        except FloatingPointError:
+            raise FloatingPointError("Overflow occured, please scale features")
+        finally:
+            self.change_settings(old_settings)
 
     def _predict_example(self, x):
-        if not hasattr(x, "shape") or len(x.shape) == 1:
-            return self.feed_forward(numpy.array([x]))
-        else:
-            return self.feed_forward(x)
+        # if not hasattr(x, "shape") or len(x.shape) == 1:
+        #     return self.feed_forward(numpy.array([x]))
+        # else:
+        return self.feed_forward(x)
 
     def predict(self, X):
         return self.feed_forward(X)

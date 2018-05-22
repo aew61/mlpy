@@ -15,7 +15,7 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-from nets import ELM
+from nets import elm
 
 
 def main():
@@ -38,7 +38,7 @@ def main():
     print("training_labels:\n%s" % training_labels)
 
     # make the neural net
-    net = ELM([num_features, 3, num_outputs])
+    net = elm([num_features, 3, num_outputs])
 
     validation_features = numpy.array([[8, 3]])
 

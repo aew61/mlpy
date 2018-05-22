@@ -10,10 +10,7 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-from ann import ann  # noqa: E402
-from basenet import BaseNet  # noqa: E402
-from elm import elm  # noqa: E402
-from rnn import rnn
-
-import embedding
+from cbow import cbow
+from skipgram import skipgram
+from word2vec import word2vec
 

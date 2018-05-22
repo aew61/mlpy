@@ -38,12 +38,14 @@ class BaseNet(core.Base):
             self.afuncs = list(afuncs)
             self.afunc_primes = list(afunc_primes)
 
+    def change_settings(new_settings):
+        return numpy.seterr(**new_settings)
+
     def feed_forward(self, X):
-        old_settings = dict()
+        new_settings = dict({"over": "ignore"})
         if not self.ignore_overflow:
-            old_settings = numpy.seterr(over="raise")
-        else:
-            old_settings = numpy.seterr(over="ignore")
+            new_settings["over"] = "raise"
+        old_settings = self.change_settings(new_settings)
 
         try:
             a = X
@@ -53,7 +55,7 @@ class BaseNet(core.Base):
         except FloatingPointError:
             raise FloatingPointError("Overflow occured, please scale features")
         finally:
-            numpy.seterr(**old_settings)
+            self.change_settings(old_settings)
 
     def _predict_example(self, x):
         # if not hasattr(x, "shape") or len(x.shape) == 1:

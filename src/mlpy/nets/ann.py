@@ -38,11 +38,10 @@ class ann(basenet.BaseNet):
         return cost + weight_decay_term
 
     def back_propagate(self, X, Y):
-        old_settings = dict()
+        new_settings = dict({"over": "ignore"})
         if not self.ignore_overflow:
-            old_settings = numpy.seterr(over="raise")
-        else:
-            old_settings = numpy.seterr(over="ignore")
+            new_settings["over"] = "raise"
+        old_settings = self.change_settings(new_settings)
 
         try:
             # feed forward but remember each layer's computations as we go
@@ -72,7 +71,7 @@ class ann(basenet.BaseNet):
         except FloatingPointError:
             raise FloatingPointError("Overflow occured, please scale features")
         finally:
-            numpy.seterr(**old_settings)
+            self.change_settings(old_settings)
 
     def _train(self, X, Y):
         dLdWs, dLdBs = self.back_propagate(X, Y)

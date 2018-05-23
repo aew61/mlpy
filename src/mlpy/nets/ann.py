@@ -49,6 +49,9 @@ class ann(basenet.BaseNet):
             as_.append(a)
         return zs, as_
 
+    def compute_error(self, Y_hat, Y):
+        return Y_hat - Y
+
     def back_propagate(self, X, Y):
         new_settings = dict({"over": "ignore"})
         if not self.ignore_overflow:
@@ -63,7 +66,7 @@ class ann(basenet.BaseNet):
             dLdBs = [None for _ in self.biases]
 
             # compute the last layer first
-            delta = numpy.multiply((as_[-1] - Y), self.afunc_primes[-1](zs[-1]))
+            delta = numpy.multiply(self.compute_error(as_[-1], Y), self.afunc_primes[-1](zs[-1]))
             dLdBs[-1] = numpy.sum(delta, axis=0, keepdims=True) + self.weight_decay*self.biases[-1]
             dLdWs[-1] = numpy.dot(as_[-2].T, delta) + self.weight_decay*self.weights[-1]
 

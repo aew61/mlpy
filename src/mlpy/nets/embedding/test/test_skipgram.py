@@ -14,8 +14,8 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-from cbow import cbow
 from contok import contok
+from skipgram import skipgram
 
 
 def main():
@@ -23,17 +23,14 @@ def main():
     #           "i am doing well",
     #          ]
     corpus = ["Hey this is sample corpus using only one context word"]
+    # corpus = ["hi"]
     num_embedding_dims = 5
     context_size = 2
-    # X, y = compute_one_hot_training(corpus, context_size)
     tok = contok(context_size).tokenize(corpus)
-    X, y = tok.transform(corpus)
-    # print(X)
-    # print()
-    # print(y)
+    y, X = tok.transform(corpus)
 
-    num_epochs = 50
-    m = cbow(y.shape[1], context_size, 3, learning_rate=0.05)
+    num_epochs = 100
+    m = skipgram(X.shape[1], context_size, 3, learning_rate=0.1)
 
     for i in range(num_epochs):
         #print([w.shape for w in m.weights])

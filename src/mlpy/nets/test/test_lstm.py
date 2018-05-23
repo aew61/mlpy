@@ -78,7 +78,10 @@ def main():
     # print(net.C_b)
     # print(net.Of_b)
     net.reset()
-    print(net.predict(X))
+    # print(net.predict(X))
+    Y = net.predict(X)
+    for x, y in zip(X, Y):
+        print("%s -> %s" % (x, y))
 
 
 if __name__ == "__main__":

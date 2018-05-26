@@ -15,11 +15,13 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
+from activations import softmax, softmax_prime
 import core
+from losses import cross_entropy, squared_difference
 
 
 class BaseRNN(core.Base, metaclass=ABCMeta):
-    def __init__(self, input_size, output_size, bptt_truncate=4, afuncs=None, afunc_primes=None, seed=None):
+    def __init__(self, input_size, output_size, bptt_truncate=4, afuncs=None, afunc_primes=None, seed=None, loss_func=None):
         super(BaseRNN, self).__init__()
         self.afuncs = afuncs
         self.afunc_primes = afunc_primes
@@ -27,6 +29,12 @@ class BaseRNN(core.Base, metaclass=ABCMeta):
         self.input_size = input_size
         self.output_size = output_size
         self.bptt_truncate = bptt_truncate
+        self.loss_func = loss_func
+        if self.loss_func is None:
+            if self.afuncs is None or (self.afuncs[-1] == softmax and self.afunc_primes[-1] == softmax_prime):
+                self.loss_func = cross_entropy
+            else:
+                self.loss_func = squared_difference
 
     @abstractmethod
     def compute_layer(self, X):
@@ -65,7 +73,8 @@ class BaseRNN(core.Base, metaclass=ABCMeta):
             self.reset()
             N += X[i].shape[0]
             Os = self.predict_proba(X[i])
-            L += -1*numpy.sum(numpy.log(Os[range(X[i].shape[0]), numpy.argmax(Y[i], axis=1)]))
+            # L += -1*numpy.sum(numpy.log(Os[range(X[i].shape[0]), numpy.argmax(Y[i], axis=1)]))
+            L += X[i].shape[0] * self.loss_func(Os, Y[i])
         self.reset()
         return L/N
 

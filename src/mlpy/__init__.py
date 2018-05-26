@@ -10,7 +10,6 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-import activation_functions  # noqa: E402
 import bayesian  # noqa: E402
 import cross_validation  # noqa: E402
 import data  # noqa: E402

@@ -20,15 +20,14 @@ import core
 
 class ann(basenet.BaseNet):
     def __init__(self, layers, seed=None, afuncs=None, afunc_primes=None,
-                 learning_rate=1.0, weight_decay_coeff=0.0, ignore_overflow=False):
-        super(ann, self).__init__(layers, seed=seed, afuncs=afuncs,
+                 learning_rate=1.0, weight_decay_coeff=0.0, ignore_overflow=False, loss_func=None):
+        super(ann, self).__init__(layers, seed=seed, afuncs=afuncs, loss_func=loss_func,
                                   afunc_primes=afunc_primes, ignore_overflow=ignore_overflow)
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay_coeff
 
-    def cost_function(self, X, Y):
-        y_hat = self.feed_forward(X)
-        cost = 0.5 * numpy.sum((y_hat - Y) ** 2) / X.shape[0]  # normalization constant
+    def loss_function(self, X, Y):
+        cost = super(ann, self).loss_function(X, Y)
 
         weight_decay_term = 0.0
         if self.weight_decay != 0.0:

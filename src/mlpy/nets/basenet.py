@@ -14,12 +14,13 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-from activation_functions import sigmoid, sigmoid_prime
+from activations import sigmoid, sigmoid_prime, softmax, softmax_prime
 import core
+from losses import cross_entropy, squared_difference
 
 
 class BaseNet(core.Base):
-    def __init__(self, layers, seed=None, afuncs=None, afunc_primes=None, ignore_overflow=False):
+    def __init__(self, layers, seed=None, afuncs=None, afunc_primes=None, ignore_overflow=False, loss_func=None):
         super(BaseNet, self).__init__()
         numpy.random.seed(seed)
 
@@ -38,8 +39,18 @@ class BaseNet(core.Base):
             self.afuncs = list(afuncs)
             self.afunc_primes = list(afunc_primes)
 
+        self.loss_func = loss_func
+        if self.loss_func is None:
+            if self.afuncs[-1] == softmax and self.afunc_primes[-1] == softmax_prime:
+                self.loss_func = cross_entropy
+            else:
+                self.loss_func = squared_difference
+
     def change_settings(self, new_settings):
         return numpy.seterr(**new_settings)
+
+    def loss_function(self, X, Y):
+        return self.loss_func(self.feed_forward(X), Y)
 
     def feed_forward(self, X):
         new_settings = dict({"over": "ignore"})

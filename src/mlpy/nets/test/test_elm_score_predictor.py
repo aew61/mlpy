@@ -32,7 +32,7 @@ def main():
                                    [93]], dtype=float)
 
     # training_features /= numpy.amax(training_features, axis=0)
-    # training_labels /= 100
+    training_labels /= 100
 
     print("training_features:\n%s" % training_features)
     print("training_labels:\n%s" % training_labels)

@@ -6,17 +6,17 @@ import sys
 
 _cd_ = os.path.abspath(os.path.dirname(__file__))
 _net_dir_ = os.path.join(_cd_, "..")
-_src_dir_ = os.path.join(_cd_, "..", "..")
-for _dir_ in [_cd_, _net_dir_, _src_dir_]:
+# _src_dir_ = os.path.join(_cd_, "..", "..")
+for _dir_ in [_cd_, _net_dir_]: # , _src_dir_]:
     if _dir_ not in sys.path:
         sys.path.append(_dir_)
-del _src_dir_
+# del _src_dir_
 del _net_dir_
 del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-import activation_functions as af
+import activations as af
 import ann
 
 

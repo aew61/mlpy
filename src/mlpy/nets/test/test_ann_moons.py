@@ -16,7 +16,7 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-import activation_functions as af
+import nets.activations as af
 from nets import ann
 
 
@@ -71,6 +71,9 @@ def main():
     training_iter = 20000
 
     X, Y = dsets.make_moons(200, noise=0.2)
+    # print(X)
+    # print()
+    # print(Y)
 
     hidden_layers = [1, 2, 3, 4, 5, 20, 30, 50, 100]  # [1, 2, 3, 4, 5, 20, 30, 50]
 

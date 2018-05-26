@@ -5,23 +5,24 @@ import sys
 
 
 _cd_ = os.path.abspath(os.path.dirname(__file__))
-_src_dir_ = os.path.join(_cd_, "..")
-for _dir_ in [_cd_, _src_dir_]:
+# _src_dir_ = os.path.join(_cd_, "..")
+for _dir_ in [_cd_]: # , _src_dir_]:
     if _dir_ not in sys.path:
         sys.path.append(_dir_)
-del _src_dir_
+# del _src_dir_
 del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-import activation_functions as af
+import activations as af
 import basernn
 
 
 class rnn(basernn.BaseRNN):
-    def __init__(self, input_size, output_size, hidden_size=100, seed=None, afuncs=None, afunc_primes=None, bptt_truncate=4, learning_rate=0.005):
+    def __init__(self, input_size, output_size, hidden_size=100, seed=None, afuncs=None, afunc_primes=None, bptt_truncate=4, learning_rate=0.005, loss_func=None):
         super(rnn, self).__init__(input_size, output_size, afuncs=afuncs, seed=seed,
-                                  afunc_primes=afunc_primes, bptt_truncate=bptt_truncate)
+                                  afunc_primes=afunc_primes, bptt_truncate=bptt_truncate,
+                                  loss_func=loss_func)
         self.hidden_size = hidden_size
         self.learning_rate = learning_rate
 

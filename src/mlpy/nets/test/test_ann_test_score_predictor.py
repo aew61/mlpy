@@ -87,7 +87,7 @@ def main():
 
     for i in iters:
         net.train(X, Y)
-        costs.append(net.cost_function(X, Y))
+        costs.append(net.loss_function(X, Y))
 
     print("validation set:\n%s" % validation_features)
     print("validation:\n%s" % net.predict(validation_features))

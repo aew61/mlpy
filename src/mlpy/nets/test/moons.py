@@ -7,7 +7,7 @@ from sklearn import datasets
 
 
 _cd_ = os.path.abspath(os.path.dirname(__file__))
-_src_dir_ = os.path.join(_cd_, "..", "..")
+_src_dir_ = os.path.join(_cd_, "..")
 if _src_dir_ not in sys.path:
     sys.path.append(_src_dir_)
 del _src_dir_
@@ -15,7 +15,7 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-import activation_functions as af
+import activations as af
 
 class ANN(object):
     def __init__(self, layers, afuncs, afunc_primes):

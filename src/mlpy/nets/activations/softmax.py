@@ -35,3 +35,19 @@ def softmax_prime(X):
     # return gradient
     return numpy.ones(X.shape)
 
+
+def softmax_single_jacobian(Y):
+    Y_ = Y.reshape(-1, 1)
+    return numpy.diagflat(Y_) - numpy.dot(Y_, Y_.T)
+
+
+def softmax_jacobian(X):
+    Y = softmax(X)
+    if len(Y.shape) == 1:
+        return softmax_single_jacobian(Y)
+
+    out = numpy.zeros((X.shape[0], X.shape[1], X.shape[1]), dtype=float)
+    for i in range(X.shape[0]):
+        out[i] = softmax_single_jacobian(Y[i])
+    return out    
+

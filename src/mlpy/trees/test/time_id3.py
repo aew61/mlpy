@@ -28,7 +28,7 @@ def main():
     data_list = [data.load_voting_data(), data.load_volcanoe_data(), data.load_spam_data()]
 
     clf_name_list = ["opt id3", "  leid3", " ppyid3"]
-    clf_type_list = [id3.ID3Tree, leid3.LEID3Tree, ppyid3.PPYID3Tree]
+    clf_type_list = [id3.id3tree, leid3.leid3tree, ppyid3.ppyid3ree]
     for name, dataset in zip(name_list, data_list):
         print(name)
         h, X, Y, _ = dataset

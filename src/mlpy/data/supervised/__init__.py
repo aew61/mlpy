@@ -10,8 +10,10 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-from dataset import Dataset
-from fheader import FHeader
-import ftypes
-import utils
+import features
+import loaders
+
+from spam import load_spam_data
+from volcanoes import load_volcanoe_data
+from voting import load_voting_data
 

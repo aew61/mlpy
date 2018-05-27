@@ -16,5 +16,5 @@ import loaders
 
 def load_alice_in_wonderland():
     cd = os.path.abspath(os.path.dirname(__file__))
-    return loader.text.load_text()
+    return loaders.text.load_text()
 

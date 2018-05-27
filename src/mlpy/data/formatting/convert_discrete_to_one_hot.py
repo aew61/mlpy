@@ -5,16 +5,16 @@ import sys
 
 
 _cd_ = os.path.abspath(os.path.dirname(__file__))
-_src_dir_ = os.path.join(_cd_, "..")
-for _dir_ in [_cd_, _src_dir_]:
+# _src_dir_ = os.path.join(_cd_, "..")
+for _dir_ in [_cd_]: # , _src_dir_]:
     if _dir_ not in sys.path:
         sys.path.append(_dir_)
-del _src_dir_
+# del _src_dir_
 del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-from features import ftypes
+import feature_types as ftypes
 
 
 def make_one_hot_discrete_dataset(dataset, and_annotations=False):

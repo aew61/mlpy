@@ -18,7 +18,7 @@ del _cd_
 # PYTHON PROJECT IMPORTS
 import ppypartition
 import partition
-from data.features import ftypes
+import data.feature_types as ftypes
 import id3
 
 
@@ -87,7 +87,7 @@ def main():
     feature_header = {0: ftypes.NOMINAL}
     """
 
-    d = id3.ID3Tree(feature_header=feature_header)
+    d = id3.id3tree(feature_header=feature_header)
 
     test_ig(d, X, Y)
     print()

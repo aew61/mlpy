@@ -19,10 +19,10 @@ import dtreebase
 import partition
 
 
-class ID3Tree(dtreebase.DTreeBase):
+class id3tree(dtreebase.DTreeBase):
     def __init__(self, feature_header=None, max_depth=numpy.inf, use_gain_ratio=False):
-        super(ID3Tree, self).__init__(feature_header=feature_header,
-            max_depth=max_depth, use_gain_ratio=use_gain_ratio)
+        super(id3tree, self).__init__(feature_header=feature_header,
+                                      max_depth=max_depth, use_gain_ratio=use_gain_ratio)
         self.tree_impl = core.dtypes.Tree()
         self.labels = list()
 
@@ -52,7 +52,7 @@ class ID3Tree(dtreebase.DTreeBase):
                     partition.create_partition(max_f_index, self.feature_header[max_f_index],
                                                X[:, max_f_index], Y))
             else:  # pure node choose majority class
-                unique_ys = numpy.unique(Y)
+                unique_ys = numpy.unique(Y, axis=0)
                 new_node = core.dtypes.Node(unique_ys[0])
 
             # add node to tree
@@ -78,7 +78,7 @@ class ID3Tree(dtreebase.DTreeBase):
             
         else:
             # unique vals of Y with counts
-            unique_ys, counts = numpy.unique(Y, return_counts=True)
+            unique_ys, counts = numpy.unique(Y, axis=0, return_counts=True)
             if unique_ys.shape[0] == 0:
                 print(X, Y)
 

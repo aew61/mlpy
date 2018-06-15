@@ -74,9 +74,32 @@ class lstm(basernn.BaseRNN):
         # convert the final hidden state to the observed state
         return self.afuncs[2](numpy.dot(self.W_o, self.h_t) + self.b_o)
 
+    def compute_layer_and_cache(self, X):
+        # forward propagate, saving information as we go
+        F_arg = numpy.dot(self.W_f, X) + numpy.dot(self.U_f, self.h_t) + self.b_f
+        F = af.sigmoid(F_arg)
+
+        I_arg = numpy.dot(self.W_i, X) + numpy.dot(self.U_i, self.h_t) + self.b_i
+        I = af.sigmoid(I_arg)
+
+        C_arg = numpy.dot(self.W_c, X) + numpy.dot(self.U_c, self.h_t) + self.b_c
+        C = self.afuncs[0](C_arg)
+
+        self.S = numpy.multiply(F, self.S) + numpy.multiply(I, C)
+
+        Hf_arg = numpy.dot(self.W_hf, X) + numpy.dot(self.U_hf, self.h_t) + self.b_hf
+        Hf = af.sigmoid(Hf_arg)
+
+        self.h_t = numpy.multiply(Hf, self.afuncs[1](self.S))
+
+        O_arg = numpy.dot(self.W_o, self.h_t) + self.b_o
+        O = self.afuncs[2](O_arg)
+        return F_arg, F, I_arg, I, C_arg, C, Hf_arg, Hf,\
+               numpy.array(self.h_t), O_arg, O, numpy.array(self.S)
+
     def reset(self):
-        self.S[:] = 0
-        self.h_t[:] = 0
+        self.S = numpy.zeros(self.S.shape)
+        self.h_t = numpy.zeros(self.h_t.shape)
 
     def back_prop_forget_gate(self, delta_s_t, delta_h_t, S, F_arg, H, X, dLdfs):
         dLdW_f, dLdU_f, dLdb_f = dLdfs
@@ -188,15 +211,16 @@ class lstm(basernn.BaseRNN):
 
         # dLdW_o is more complex. The derivative for a single element is
         # h_t * delta, however, h_t has dimension (hidden_size) and
-        # delta_h has dimensions (num_examples, output_size)
+        # delta has dimensions (num_examples, output_size)
         # Hs on the other hand has dimensions (num_examples, hidden_size)
         # and dLdW_o should have dimensions (output_size, hidden_size)
         # so dLdW_o, to make dimensions agree, should be delta.T * Hs.
-        # Remember, Hs has one extra row for the initial hidden state,
-        # so we remove it (Hs[1:]) because that extra row is useless for gradient updates.
-        dLdW_o = numpy.dot(delta.T, Hs[1:])
+        # Remember, Hs has one extra row (at the end) for the initial hidden state,
+        # so we remove it (Hs[:-1]) because that extra row is useless for gradient updates.
+        dLdW_o = numpy.dot(delta.T, Hs[:-1])
         return (dLdfs, dLdis, dLdcs, dLdhfs, (dLdW_o, dLdb_o))
 
+    """
     def feed_forward_and_cache(self, X):
         assert(X.shape[1] == self.input_size)
         time = X.shape[0]
@@ -241,17 +265,26 @@ class lstm(basernn.BaseRNN):
             O_args[t] = numpy.dot(self.W_o, Hs[t]) + self.b_o
             Os[t] = self.afuncs[2](O_args[t])
         return F_args, Fs, I_args, Is, C_args, Cs, Hf_args, Hfs, Hs, O_args, Os, Ss
+    """
 
     def back_propagate_through_time(self, X, Y):
         time = X.shape[0]
+        self.reset()
         F_args, Fs, I_args, Is, C_args, Cs, Hf_args, Hfs, Hs, O_args, Os, Ss = self.feed_forward_and_cache(X)
+        Ss = numpy.concatenate((Ss, numpy.zeros((1, self.hidden_size))))
+        Hs = numpy.concatenate((Hs, numpy.zeros((1, self.hidden_size))))
+        self.reset()
 
         # (Os - Y) has dimensions (num_examples, output_size)
         # and O_args has dimensions (num_examples, output_size)
         # so delta has dimensions (num_examples, output_size)
-        delta = numpy.multiply(Os - Y, self.afunc_primes[2](O_args))
+        delta = numpy.multiply(self.compute_error_vector(Os, Y), self.afunc_primes[2](O_args))
         dLdfs, dLdis, dLdcs, dLdhfs, dLdOs = self.init_gradients(delta, Hs)
+
+        dLdX = numpy.zeros(X.shape)
+
         for t in range(time):
+            # delta_t = 
             # to compute the error due to ht, element-wise, the equation is:
             # delta_h = delta * W_o.
             # A row of delta has dimensions (output_size) and W_o has
@@ -279,16 +312,16 @@ class lstm(basernn.BaseRNN):
                 # one operation to compute delta_s_t which is really delta_s_t_minus_one
 
                 self.back_prop_hidden_filter_gate(delta_s_t, delta_h_t, Hf_args[bptt_step],
-                                                  Hs[bptt_step-1], X[bptt_step], dLdhfs)
+                                                  Hs[bptt_step-1], X[bptt_step], dLdhfs, dLdX)
                 self.back_prop_candidate_gate(delta_s_t, delta_h_t, Is[bptt_step],
                                               C_args[bptt_step], Hs[bptt_step-1],
-                                              X[bptt_step], dLdcs)
+                                              X[bptt_step], dLdcs, dLdX)
                 self.back_prop_input_gate(delta_s_t, delta_h_t, Cs[bptt_step],
                                           I_args[bptt_step], Hs[bptt_step-1],
-                                          X[bptt_step], dLdis)
+                                          X[bptt_step], dLdis, dLdX)
                 self.back_prop_forget_gate(delta_s_t, delta_h_t, Ss[bptt_step-1],
                                            F_args[bptt_step], Hs[bptt_step-1],
-                                           X[bptt_step], dLdfs)
+                                           X[bptt_step], dLdfs, dLdX)
 
                 # last update: need to update delta_s_t and delta_h_t so
                 # that they get through the multiplication and f2 layer of the previous layer
@@ -306,7 +339,7 @@ class lstm(basernn.BaseRNN):
                                                 self.afunc_primes[1](Ss[bptt_step-1]))
                     # and delta_h_t = delta_h_t * f2(s_t)
                     delta_h_t = numpy.multiply(delta_h_t, self.afuncs[1](Ss[bptt_step-1]))
-        return dLdfs, dLdis, dLdcs, dLdhfs, dLdOs
+        return (dLdfs, dLdis, dLdcs, dLdhfs, dLdOs, dLdX,)
 
     """
     def back_propagate_through_time_faster(self, X, Y):
@@ -334,29 +367,29 @@ class lstm(basernn.BaseRNN):
         return dLdfs, dLdis, dLdcs, dLdhfs, dLdOs
     """
 
-    def _train(self, X, Y):
-        for i in range(len(Y)):
-            self.reset()
-            dLdF, dLdI, dLdC, dLdHf, dLdO = self.back_propagate_through_time(X[i], Y[i])
-
-            self.W_f -= self.learning_rate*dLdF[0]
-            self.U_f -= self.learning_rate*dLdF[1]
-            self.b_f -= self.learning_rate*dLdF[2]
-
-            self.W_i -= self.learning_rate*dLdI[0]
-            self.U_i -= self.learning_rate*dLdI[1]
-            self.b_i -= self.learning_rate*dLdI[2]
-
-            self.W_c -= self.learning_rate*dLdC[0]
-            self.U_c -= self.learning_rate*dLdC[1]
-            self.b_c -= self.learning_rate*dLdC[2]
-
-            self.W_hf -= self.learning_rate*dLdHf[0]
-            self.U_hf -= self.learning_rate*dLdHf[1]
-            self.b_hf -= self.learning_rate*dLdHf[2]
-
-            self.W_o -= self.learning_rate*dLdO[0]
-            self.b_o -= self.learning_rate*dLdO[1]
+    def _train_return_errors(self, X, Y):
         self.reset()
-        return self
+        dLdF, dLdI, dLdC, dLdHf, dLdO, dLdX = self.back_propagate_through_time(X[i], Y[i])
+        dLdXs.append(dLdX)
+
+        self.W_f -= self.learning_rate*dLdF[0]
+        self.U_f -= self.learning_rate*dLdF[1]
+        self.b_f -= self.learning_rate*dLdF[2]
+
+        self.W_i -= self.learning_rate*dLdI[0]
+        self.U_i -= self.learning_rate*dLdI[1]
+        self.b_i -= self.learning_rate*dLdI[2]
+
+        self.W_c -= self.learning_rate*dLdC[0]
+        self.U_c -= self.learning_rate*dLdC[1]
+        self.b_c -= self.learning_rate*dLdC[2]
+
+        self.W_hf -= self.learning_rate*dLdHf[0]
+        self.U_hf -= self.learning_rate*dLdHf[1]
+        self.b_hf -= self.learning_rate*dLdHf[2]
+
+        self.W_o -= self.learning_rate*dLdO[0]
+        self.b_o -= self.learning_rate*dLdO[1]
+        self.reset()
+        return dLdX
 

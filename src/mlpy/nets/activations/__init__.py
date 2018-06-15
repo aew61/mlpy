@@ -10,6 +10,7 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
+from relu import relu, relu_prime
 from sigmoid import sigmoid, sigmoid_prime
 from linear import linear, linear_prime
 from tanh import tanh, tanh_prime

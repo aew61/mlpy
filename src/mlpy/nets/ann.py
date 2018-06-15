@@ -20,9 +20,11 @@ import core
 
 class ann(basenet.BaseNet):
     def __init__(self, layers, seed=None, afuncs=None, afunc_primes=None,
-                 learning_rate=1.0, weight_decay_coeff=0.0, ignore_overflow=False, loss_func=None):
+                 learning_rate=1.0, weight_decay_coeff=0.0, ignore_overflow=False,
+                 loss_func=None): #, error_func=None):
         super(ann, self).__init__(layers, seed=seed, afuncs=afuncs, loss_func=loss_func,
-                                  afunc_primes=afunc_primes, ignore_overflow=ignore_overflow)
+                                  afunc_primes=afunc_primes, ignore_overflow=ignore_overflow) #,
+                                  # error_func=error_func)
         self.learning_rate = learning_rate
         self.weight_decay = weight_decay_coeff
 
@@ -48,7 +50,7 @@ class ann(basenet.BaseNet):
             as_.append(a)
         return zs, as_
 
-    def compute_error(self, Y_hat, Y):
+    def compute_error_vector(self, Y_hat, Y):
         return Y_hat - Y
 
     def back_propagate(self, X, Y):
@@ -65,7 +67,7 @@ class ann(basenet.BaseNet):
             dLdBs = [None for _ in self.biases]
 
             # compute the last layer first
-            delta = numpy.multiply(self.compute_error(as_[-1], Y), self.afunc_primes[-1](zs[-1]))
+            delta = numpy.multiply(self.compute_error_vector(as_[-1], Y), self.afunc_primes[-1](zs[-1]))
             dLdBs[-1] = numpy.sum(delta, axis=0, keepdims=True) + self.weight_decay*self.biases[-1]
             dLdWs[-1] = numpy.dot(as_[-2].T, delta) + self.weight_decay*self.weights[-1]
 
@@ -73,14 +75,16 @@ class ann(basenet.BaseNet):
                 delta = numpy.dot(delta, self.weights[-i+1].T) * self.afunc_primes[-i](zs[-i])
                 dLdBs[-i] = numpy.sum(delta, axis=0) + self.weight_decay*self.biases[-i]
                 dLdWs[-i] = numpy.dot(as_[-i-1].T, delta) + self.weight_decay*self.weights[-i]
-            return dLdWs, dLdBs
+            dLdX = numpy.dot(delta, self.weights[0].T)
+            return dLdWs, dLdBs, dLdX
         except FloatingPointError:
             raise FloatingPointError("Overflow occured, please scale features")
         finally:
             self.change_settings(old_settings)
 
-    def _train(self, X, Y):
-        dLdWs, dLdBs = self.back_propagate(X, Y)
+    def _train_return_errors(self, X, Y):
+        dLdWs, dLdBs, dLdX = self.back_propagate(X, Y)
         self.weights = [w - self.learning_rate * dLdW for w, dLdW in zip(self.weights, dLdWs)]
         self.biases = [b - self.learning_rate * dLdB for b, dLdB in zip(self.biases, dLdBs)]
+        return dLdX
 

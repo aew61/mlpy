@@ -13,9 +13,9 @@ del _cd_
 from contok import contok
 
 
-def load_text(text_file, tokenization_func=None, context_size):
+def load_file(file_path, tokenization_func=None, context_size):
     data = list()
-    with open(text_file, "r") as f:
+    with open(file_path, "r") as f:
         for l in f:
             data.append(l)
     return data

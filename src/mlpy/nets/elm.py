@@ -25,7 +25,7 @@ class elm(basenet.BaseNet):
         assert(self.num_layers == 3)
         self.biases = self.biases[:-1]
 
-    def _train(self, X, Y):
+    def _train_return_errors(self, X, Y):
         old_settings = dict()
         if not self.ignore_overflow:
             old_settings = numpy.seterr(over="raise")
@@ -43,6 +43,7 @@ class elm(basenet.BaseNet):
 
             h_pseudoinverse = numpy.linalg.pinv(H)
             self.weights[-1] = numpy.dot(h_pseudoinverse, Y)
+            return numpy.zeros(X.shape)  # TODO: Error backprop for input X
         except FloatingPointError:
             raise FloatingPointError("Overflow occured: please scale features")
         finally:

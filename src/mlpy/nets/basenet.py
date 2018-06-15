@@ -1,4 +1,5 @@
 # SYSTEM IMPORTS
+from abc import ABCMeta, abstractmethod
 import numpy
 import os
 import sys
@@ -19,7 +20,7 @@ import core
 from losses import cross_entropy, squared_difference
 
 
-class BaseNet(core.Base):
+class BaseNet(core.Base, metaclass=ABCMeta):
     def __init__(self, layers, seed=None, afuncs=None, afunc_primes=None, ignore_overflow=False, loss_func=None):
         super(BaseNet, self).__init__()
         numpy.random.seed(seed)
@@ -67,6 +68,14 @@ class BaseNet(core.Base):
             raise FloatingPointError("Overflow occured, please scale features")
         finally:
             self.change_settings(old_settings)
+
+    @abstractmethod
+    def _train_return_errors(self, X, Y):
+        pass
+
+    def _train(self, X, Y):
+        self._train_return_errors(X, Y)
+        return self
 
     def _predict_example(self, x):
         # if not hasattr(x, "shape") or len(x.shape) == 1:

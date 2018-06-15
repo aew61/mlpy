@@ -32,7 +32,7 @@ def main():
     # print(X)
     # print(Y)
 
-    num_iterations = 400
+    num_iterations = 1000 # 400
 
     net = rnn.rnn(num_features, output_size, hidden_size=hidden_size, seed=10)
     for i in range(num_iterations):

@@ -10,6 +10,6 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-from data_partitioner import create_training_and_validation_sets
-from data_partitioner import abstract_partition
+from c45_format import c45_format, trim_line
+from find_file import find_file
 

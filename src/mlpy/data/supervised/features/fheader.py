@@ -14,7 +14,8 @@ del _cd_
 
 # PYTHON PROJECT IMPORTS
 import feature_types as ftypes
-import utils
+import files
+# import utils
 
 
 __NAMES_FILE_EXTENSION__ = ".names"
@@ -37,7 +38,8 @@ class FHeader(object):
         self.root_dir = root_dir
 
     def _parse_feature(self, line):
-        line = utils.trim(line)
+        # line = utils.trim(line)
+        line = files.trim_line(line)
 
         if len(line) == 0:
             return None, None, None
@@ -64,7 +66,8 @@ class FHeader(object):
         return f_type, sorted(f_vals)
 
     def create_header(self):
-        f_path = utils.find_file(self.names_file, self.root_dir)
+        # f_path = utils.find_file(self.names_file, self.root_dir)
+        f_path = files.find_file(self.names_file, root_dir=self.root_dir)
 
         index = 0
         # now parse the .names file....first line should be the class

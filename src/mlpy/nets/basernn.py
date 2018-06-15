@@ -41,12 +41,30 @@ class BaseRNN(core.Base, metaclass=ABCMeta):
         pass
 
     @abstractmethod
+    def compute_layer_and_cache(self, X):
+        pass
+
+    @abstractmethod
     def reset(self):
         pass
 
     @abstractmethod
     def back_propagate_through_time(self, X, Y):
         pass
+
+    @abstractmethod
+    def _train_return_errors(self, X, Y):
+        pass
+
+    def compute_error_vector(self, Y_hat, Y):
+        return Y_hat - Y
+
+    def _train(self, X, Y):
+        for i in range(len(Y)):
+            self.reset()
+            self._train_return_errors(X[i], Y[i])
+            self.reset()
+        return self
 
     def _predict_example(self, x):
         return self.predict(x.reshape(1, x.shape[0]))
@@ -57,12 +75,19 @@ class BaseRNN(core.Base, metaclass=ABCMeta):
             Os[i] = self.compute_layer(X[i])
         return Os
 
+    def feed_forward_and_cache(self, X):
+        cache_list = list()
+        for i in range(X.shape[0]):
+            cache_list.append(self.compute_layer_and_cache(X[i]))
+        return [numpy.array([cache_list[a][b] for a in range(len(cache_list))]) for b in range(len(cache_list[0]))]
+
     def predict(self, X):
         assert(X.shape[1] == self.input_size)
         Os = self.feed_forward(X)
         max_indices = numpy.argmax(Os, axis=1)
         Os[:, :] = 0
         Os[range(Os.shape[0]), max_indices] = 1
+        # return Os
         return Os
 
     def loss_function(self, X, Y):

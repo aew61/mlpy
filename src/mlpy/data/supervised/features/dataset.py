@@ -15,7 +15,8 @@ del _cd_
 
 # PYTHON PROJECT IMPORTS
 import feature_types as ftypes
-import utils
+import files
+# import utils
 
 
 __DATA_FILE_EXTENSION__ = ".data"
@@ -79,10 +80,16 @@ class Dataset(object):
 
     def _parse_data_file(self):
         data = list()
-        data_fpath = utils.find_file(self.data_file, root_dir=self.root_dir)
+        # data_fpath = utils.find_file(self.data_file, root_dir=self.root_dir)
+        # with open(data_fpath) as data_file:
+        #     for line in data_file:
+        #         line = utils.trim(line).strip()
+        #         if len(line) > 0:
+        #             data.append(line)
+        data_fpath = files.find_file(self.data_file, root_dir=self.root_dir)
         with open(data_fpath) as data_file:
             for line in data_file:
-                line = utils.trim(line).strip()
+                line = files.trim_line(line).strip()
                 if len(line) > 0:
                     data.append(line)
 

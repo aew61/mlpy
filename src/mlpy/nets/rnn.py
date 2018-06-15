@@ -55,19 +55,6 @@ class rnn(basernn.BaseRNN):
 
     def back_propagate_through_time(self, X, Y):
         assert(X.shape[1] == self.input_size)
-        time = X.shape[0]
-        """
-        O_args = numpy.zeros((time, self.output_size))
-        Os = numpy.zeros((time, self.output_size))
-        S_args = numpy.zeros((time, self.hidden_size))
-        Ss = numpy.zeros((time+1, self.hidden_size))
-        Ss[-1] = numpy.zeros(self.hidden_size)
-        for t in range(time):
-            S_args[t] = numpy.dot(self.U, X[t]) + numpy.dot(self.W, Ss[t-1]) + self.b_s
-            Ss[t] = self.afuncs[0](S_args[t])
-            O_args[t] = numpy.dot(self.V, Ss[t]) + self.b_o
-            Os[t] = self.afuncs[1](O_args[t])
-        """
         self.reset()
         S_args, Ss, O_args, Os = self.feed_forward_and_cache(X)
         Ss = numpy.concatenate((Ss, numpy.zeros((1, self.hidden_size))))
@@ -83,25 +70,25 @@ class rnn(basernn.BaseRNN):
         dLdX = numpy.zeros(X.shape)
 
         delta = self.compute_error_vector(Os, Y)
-        for t in range(time):  # walk backwards through time
+        for t in range(X.shape[0]):  # walk backwards through time
             delta_t = numpy.multiply(delta[t], self.afunc_primes[1](O_args[t]))
             dLdV += numpy.outer(delta_t, Ss[t])
             dLdb_o += delta_t
-            delta_t = numpy.multiply(numpy.dot(self.V.T, delta_t),
+            delta_t = numpy.multiply(numpy.dot(delta_t, self.V),
                                      self.afunc_primes[0](S_args[t]))
             for bptt_step in range(max(0, t-self.bptt_truncate), t+1)[::-1]:
                 dLdb_s += delta_t
                 dLdW += numpy.outer(delta_t, Ss[bptt_step-1])
                 dLdU += numpy.outer(delta_t, X[bptt_step])
-                dLdX[bptt_step] += numpy.dot(self.U, delta_t)
-                delta_t = numpy.multiply(numpy.dot(self.W.T, delta_t),
+                dLdX[bptt_step] += numpy.dot(delta_t, self.U)
+                delta_t = numpy.multiply(numpy.dot(delta_t, self.W),
                                          self.afunc_primes[0](Ss[bptt_step-1]))
                 # print(delta_t.shape)
         return (dLdU, dLdV, dLdW, dLdX,)
 
     def _train_return_errors(self, X, Y):
         self.reset()
-        dLdU, dLdV, dLdW, dLdX = self.back_propagate_through_time(X[i], Y[i])
+        dLdU, dLdV, dLdW, dLdX = self.back_propagate_through_time(X, Y)
         self.U -= self.learning_rate*dLdU
         self.V -= self.learning_rate*dLdV
         self.W -= self.learning_rate*dLdW

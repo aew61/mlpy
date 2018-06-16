@@ -18,7 +18,7 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-import rnn
+from lstm import lstm
 from data import unsupervised
 
 
@@ -132,9 +132,9 @@ def main():
     X_dev, Y_dev = dev
     X_test, Y_test = test
 
-    lm = rnn.rnn(len(vocab), len(vocab), hidden_size=hidden_size, seed=10).train(X_train, Y_train,
-                                                                                 verbose=2,
-                                                                                 epochs=num_epochs)
+    lm = lstm(len(vocab), len(vocab), hidden_size=hidden_size, seed=10).train(X_train, Y_train,
+                                                                              verbose=2,
+                                                                              epochs=num_epochs)
     acc = 0
     tot = 0
     for X_t, Y_t in zip(X_test, Y_test):

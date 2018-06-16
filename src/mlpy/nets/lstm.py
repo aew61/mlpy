@@ -58,6 +58,7 @@ class lstm(basernn.BaseRNN):
             self.afunc_primes = [af.tanh_prime, af.tanh_prime, af.softmax_prime]
 
     def compute_layer(self, X):
+        X = self._assert_numpy(X)
         # print(self.h_t.shape)
         # print(X.shape)
         # compute the "forget gate"
@@ -76,6 +77,7 @@ class lstm(basernn.BaseRNN):
         return self.afuncs[2](numpy.dot(self.W_o, self.h_t) + self.b_o)
 
     def compute_layer_and_cache(self, X):
+        X = self._assert_numpy(X)
         # forward propagate, saving information as we go
         F_arg = numpy.dot(self.W_f, X) + numpy.dot(self.U_f, self.h_t) + self.b_f
         F = af.sigmoid(F_arg)
@@ -137,6 +139,8 @@ class lstm(basernn.BaseRNN):
         return (dLdfs, dLdis, dLdcs, dLdhfs, (dLdW_o, dLdb_o))
 
     def back_propagate_through_time(self, X, Y):
+        X = self._assert_numpy(X)
+        Y = self._assert_numpy(Y)
         self.reset()
         F_args, Fs, I_args, Is, C_args, Cs, Hf_args, Hfs, Hs, O_args, Os, Ss = self.feed_forward_and_cache(X)
         Ss = numpy.concatenate((Ss, numpy.zeros((1, self.hidden_size))))

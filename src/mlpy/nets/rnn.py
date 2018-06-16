@@ -40,10 +40,12 @@ class rnn(basernn.BaseRNN):
             self.afunc_primes = [af.tanh_prime, af.softmax_prime]
 
     def compute_layer(self, X):
+        X = self._assert_numpy(X)
         self.S = self.afuncs[0](numpy.dot(self.U, X) + numpy.dot(self.W, self.S) + self.b_s)
         return self.afuncs[1](numpy.dot(self.V, self.S) + self.b_o)
 
     def compute_layer_and_cache(self, X):
+        X = self._assert_numpy(X)
         S_args = numpy.dot(self.U, X) + numpy.dot(self.W, self.S) + self.b_s
         self.S = self.afuncs[0](S_args)
         O_args = numpy.dot(self.V, self.S) + self.b_o
@@ -55,6 +57,8 @@ class rnn(basernn.BaseRNN):
 
     def back_propagate_through_time(self, X, Y):
         assert(X.shape[1] == self.input_size)
+        X = self._assert_numpy(X)
+        Y = self._assert_numpy(Y)
         self.reset()
         S_args, Ss, O_args, Os = self.feed_forward_and_cache(X)
         Ss = numpy.concatenate((Ss, numpy.zeros((1, self.hidden_size))))

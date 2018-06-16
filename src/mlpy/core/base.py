@@ -10,8 +10,8 @@ class Base(metaclass=ABCMeta):
     def __init__(self):
         pass
 
-    def train(self, X, y):
-        self._train(X, y)
+    def train(self, X, y, *args, **kwargs):
+        self._train(X, y, *args, **kwargs)
         return self
 
     def predict(self, X):
@@ -28,7 +28,7 @@ class Base(metaclass=ABCMeta):
             yield self._predict_example(x)
 
     @abstractmethod
-    def _train(self, X, y):
+    def _train(self, X, y, *args, **kwargs):
         pass
 
     @abstractmethod

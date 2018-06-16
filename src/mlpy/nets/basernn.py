@@ -59,23 +59,56 @@ class BaseRNN(core.Base, metaclass=ABCMeta):
     def compute_error_vector(self, Y_hat, Y):
         return Y_hat - Y
 
-    def _train(self, X, Y):
-        for i in range(len(Y)):
-            self.reset()
-            self._train_return_errors(X[i], Y[i])
-            self.reset()
+    def _assert_numpy(self, X):
+        if not isinstance(X, numpy.ndarray):
+            return X.toarray()
+        return X
+
+    def _train(self, X, Y, verbose=False, epochs=1, converge_function=None):
+        for epoch in range(epochs):
+            tot = len(Y)
+            current = 0
+            current_loss = 0
+            N = 0
+
+            for i in range(len(Y)):
+                self.reset()
+                self._train_return_errors(X[i], Y[i])
+                self.reset()
+
+                if verbose > 0:
+                    current += 1
+                    N += X[i].shape[0]
+                    current_loss += self.loss_function([X[i]], [Y[i]])*X[i].shape[0]
+
+                    if verbose > 1:
+                        print("training epoch {0}/{1} [{2:.1f}%] complete | loss [{3:.3f}]\
+                              \r".format((epoch+1), epochs, float(current)*100/tot,
+                                         current_loss/N), end="", flush=True)
+                    else:
+                        print("training epoch {0}/{1} [{2:.1f}%] complete\r".format(
+                              (epoch+1), epochs, float(current)*100/tot), end="", flush=True)
+
+            if verbose:
+                print()
+
+            if converge_function is not None and converge_function(self):
+                return self
+
         return self
 
     def _predict_example(self, x):
         return self.predict(x.reshape(1, x.shape[0]))
 
     def feed_forward(self, X):
+        X = self._assert_numpy(X)
         Os = numpy.zeros((X.shape[0], self.output_size))
         for i in range(X.shape[0]):  # for each example
             Os[i] = self.compute_layer(X[i])
         return Os
 
     def feed_forward_and_cache(self, X):
+        X = self._assert_numpy(X)
         cache_list = list()
         for i in range(X.shape[0]):
             cache_list.append(self.compute_layer_and_cache(X[i]))
@@ -87,7 +120,6 @@ class BaseRNN(core.Base, metaclass=ABCMeta):
         max_indices = numpy.argmax(Os, axis=1)
         Os[:, :] = 0
         Os[range(Os.shape[0]), max_indices] = 1
-        # return Os
         return Os
 
     def loss_function(self, X, Y):

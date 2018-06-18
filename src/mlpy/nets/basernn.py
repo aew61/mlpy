@@ -65,11 +65,13 @@ class BaseRNN(core.Base, metaclass=ABCMeta):
         return X
 
     def _train(self, X, Y, verbose=False, epochs=1, converge_function=None):
+        print_increment = 0.001
         for epoch in range(epochs):
             tot = len(Y)
             current = 0
             current_loss = 0
             N = 0
+            print_threshold = 0.0
 
             for i in range(len(Y)):
                 self.reset()
@@ -81,11 +83,13 @@ class BaseRNN(core.Base, metaclass=ABCMeta):
                     N += X[i].shape[0]
                     current_loss += self.loss_function([X[i]], [Y[i]])*X[i].shape[0]
 
-                    if verbose > 1:
+                    if verbose > 1 and float(current)/tot > print_threshold:
+                        print_threshold += print_increment
                         print("training epoch {0}/{1} [{2:.1f}%] complete | loss [{3:.3f}]\
                               \r".format((epoch+1), epochs, float(current)*100/tot,
                                          current_loss/N), end="", flush=True)
-                    else:
+                    elif float(current)/tot > print_threshold:
+                        print_threshold += print_increment
                         print("training epoch {0}/{1} [{2:.1f}%] complete\r".format(
                               (epoch+1), epochs, float(current)*100/tot), end="", flush=True)
 

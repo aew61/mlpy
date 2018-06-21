@@ -85,7 +85,7 @@ def cutoff_data(train, dev, test, cutoff=numpy.inf):
 
 
 def make_sequence_vectorized(vocab_dict, sequence):
-    vec_sequence = numpy.zeros((len(sequence), len(vocab_dict)))
+    vec_sequence = numpy.zeros((len(sequence), len(vocab_dict)), dtype=float)
     for i, w in enumerate(sequence):
         if w not in vocab_dict:
             vec_sequence[i][vocab_dict["<unk>"]] = 1
@@ -202,7 +202,7 @@ class VG(object):
         return len(self.corpus)
 
     def __getitem__(self, index):
-        arr = numpy.zeros((len(self.corpus[index]), self.vocab_size))
+        arr = numpy.zeros((len(self.corpus[index]), self.vocab_size), dtype=float)
         arr[numpy.arange(len(self.corpus[index])), self.corpus[index]] = 1
         return arr
 
@@ -237,7 +237,7 @@ def test_model(model, X_test, Y_test):
 
 def main():
     prune_occurance_lt = 15
-    cutoff = numpy.inf # 1000
+    cutoff = 100 # numpy.inf # 1000
     hidden_size = 100
     num_epochs = 5
 

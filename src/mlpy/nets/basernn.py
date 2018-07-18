@@ -64,7 +64,7 @@ class BaseRNN(core.Base, metaclass=ABCMeta):
             return X.toarray()
         return X
 
-    def _train(self, X, Y, verbose=False, epochs=1, converge_function=None):
+    def _train(self, X, Y, verbose=0, epochs=1, converge_function=None):
         print_increment = 0.001
         for epoch in range(epochs):
             tot = len(Y)
@@ -93,8 +93,12 @@ class BaseRNN(core.Base, metaclass=ABCMeta):
                         print("training epoch {0}/{1} [{2:.1f}%] complete\r".format(
                               (epoch+1), epochs, float(current)*100/tot), end="", flush=True)
 
-            if verbose:
-                print()
+            if verbose > 1:
+                print("training epoch {0}/{1} [{2:.1f}%] complete | loss [{3:.3f}]\r"
+                      .format((epoch+1), epochs, float(current)*100/tot, current_loss/N))
+            elif verbose > 0:
+                 print("training epoch {0}/{1} [{2:.1f}%] complete\r".format(
+                       (epoch+1), epochs, float(current)*100/tot))
 
             if converge_function is not None and converge_function(self):
                 return self

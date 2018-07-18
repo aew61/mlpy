@@ -18,7 +18,8 @@ def softmax(X):
 
 
 def softmax_prime(X):
-    return numpy.ones(X.shape)
+    # return numpy.ones(X.shape)
+    return softmax_jacobian(X)
 
 def softmax_single_jacobian(Y):
     Y_ = Y.reshape(-1, 1)

@@ -67,12 +67,28 @@ class ann(basenet.BaseNet):
             dLdBs = [None for _ in self.biases]
 
             # compute the last layer first
-            delta = numpy.multiply(self.compute_error_vector(as_[-1], Y), self.afunc_primes[-1](zs[-1]))
+            delta = self.compute_error_vector(as_[-1], Y)
+            afunc_prime = self.afunc_primes[-1](zs[-1])
+            if len(afunc_prime.shape) == 3:
+                delta = numpy.einsum("...jk, ...kl", afunc_prime,
+                                     delta.reshape(delta.shape+(1,)), optimize=True).reshape(delta.shape)
+            else:
+                delta = numpy.multiply(delta, afunc_prime)
+
+            # delta = numpy.multiply(self.compute_error_vector(as_[-1], Y), self.afunc_primes[-1](zs[-1]))
             dLdBs[-1] = numpy.sum(delta, axis=0, keepdims=True) + self.weight_decay*self.biases[-1]
             dLdWs[-1] = numpy.dot(as_[-2].T, delta) + self.weight_decay*self.weights[-1]
 
             for i in range(2, len(self.weights) + 1):
-                delta = numpy.dot(delta, self.weights[-i+1].T) * self.afunc_primes[-i](zs[-i])
+                delta = numpy.dot(delta, self.weights[-i+1].T)
+                afunc_prime = self.afunc_primes[-i](zs[-i])
+                if len(afunc_prime.shape) == 3:
+                    delta = numpy.einsum("...jk, ...kl", afunc_prime,
+                                         delta.reshape(delta.shape+(1,)), optimize=True).reshape(delta.shape)
+                else:
+                    delta = numpy.multiply(delta, afunc_prime)
+
+                # delta = numpy.dot(delta, self.weights[-i+1].T) * self.afunc_primes[-i](zs[-i])
                 dLdBs[-i] = numpy.sum(delta, axis=0) + self.weight_decay*self.biases[-i]
                 dLdWs[-i] = numpy.dot(as_[-i-1].T, delta) + self.weight_decay*self.weights[-i]
             dLdX = numpy.dot(delta, self.weights[0].T)

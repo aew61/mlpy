@@ -59,7 +59,7 @@ class skipgram(ann.ann):
         as_[-1] = self.expand_context(as_[-1])
         return zs, as_
 
-    def compute_error(self, Y_hat, Y):
+    def compute_error_vector(self, Y_hat, Y):
         # skipgram predicts the context words, which means that out output has different
         # dimensions than the weights, and different shapes than the error vector
 

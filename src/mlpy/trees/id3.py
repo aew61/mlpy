@@ -38,10 +38,15 @@ class id3tree(dtreebase.DTreeBase):
     def id3_training_algorithm(self, X, Y, parent, depth, ignored_features):
         self.num_nodes += 1
         # print("training algorithm")
+        #print("training data:")
+        #for x_, y_ in zip(X, Y):
+        #    print("%s\t%s" % (x_, y_))
         new_node = None
         if X.shape[0] > 0 and depth < self.max_depth:
             # choose the feature with max ig
             max_f_index, max_f_ig = self.max_information_gain(X, Y, ignored_features)
+            #print("choosing feature %s with ig: %s" % (max_f_index, max_f_ig))
+            #print()
             if max_f_index != dtreebase.PURE_LABELS:
                 #new_node = core.dtypes.Node(
                 #    dtreenodedata.DTreeNodeData(max_f_index,

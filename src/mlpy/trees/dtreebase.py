@@ -15,7 +15,7 @@ del _cd_
 
 # PYTHON PROJECT IMPORTS
 import core
-from data.features import ftypes
+import data.feature_types as ftypes
 
 
 PURE_LABELS = -1

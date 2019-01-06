@@ -10,11 +10,10 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-import features
 import formatting
-import loaders
+import feature_types
 import partitioning
-from spam import load_spam_data
-from volcanoes import load_volcanoe_data
-from voting import load_voting_data
+
+import supervised
+import unsupervised
 

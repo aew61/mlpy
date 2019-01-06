@@ -10,7 +10,9 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
+# from contok import contok
+
 from cbow import cbow
-# from skipgram import skipgram
+from skipgram import skipgram
 # from word2vec import word2vec
 

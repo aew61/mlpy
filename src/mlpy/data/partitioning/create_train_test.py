@@ -8,7 +8,7 @@ import numpy
 def create_training_and_validation_data(X, Y, percent_in_validation_set):
     assert(X.shape[0] == Y.shape[0])
 
-    unique_labels, counts = numpy.unique(Y, return_counts=True)
+    unique_labels, counts = numpy.unique(Y, axis=0, return_counts=True)
 
     # split up data into "bins" for each label
     split_X = list()

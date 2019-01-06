@@ -17,7 +17,7 @@ del _dir_
 
 
 # PYTHON PROJECT IMPORTS
-from data.features import ftypes
+import data.feature_types as ftypes
 
 
 def base_test_func(partition_val, comparison_func, feature_id, x):

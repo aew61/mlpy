@@ -19,10 +19,10 @@ import midoptdtreebase
 import ppypartition
 
 
-class PPYID3Tree(midoptdtreebase.MidOptDTreeBase):
+class ppyid3tree(midoptdtreebase.MidOptDTreeBase):
     def __init__(self, feature_header=None, max_depth=numpy.inf, use_gain_ratio=False):
-        super(PPYID3Tree, self).__init__(feature_header=feature_header,
-            max_depth=max_depth, use_gain_ratio=use_gain_ratio)
+        super(ppyid3tree, self).__init__(feature_header=feature_header,
+                                         max_depth=max_depth, use_gain_ratio=use_gain_ratio)
         self.tree_impl = core.dtypes.Tree()
         self.labels = list()
 
@@ -50,7 +50,7 @@ class PPYID3Tree(midoptdtreebase.MidOptDTreeBase):
                                               p_vals[1:-1],
                                               min_f, max_f))
             else:  # pure node choose majority class
-                unique_ys = numpy.unique(Y)
+                unique_ys = numpy.unique(Y, axis=0)
                 new_node = core.dtypes.Node(unique_ys[0])
 
             # add node to tree
@@ -75,7 +75,7 @@ class PPYID3Tree(midoptdtreebase.MidOptDTreeBase):
             
         else:
             # unique vals of Y with counts
-            unique_ys, counts = numpy.unique(Y, return_counts=True)
+            unique_ys, counts = numpy.unique(Y, axis=0, return_counts=True)
             if unique_ys.shape[0] == 0:
                 print(X, Y)
 

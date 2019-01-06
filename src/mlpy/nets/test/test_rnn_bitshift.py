@@ -32,7 +32,7 @@ def main():
     # print(X)
     # print(Y)
 
-    num_iterations = 400
+    num_iterations = 1000 # 400
 
     net = rnn.rnn(num_features, output_size, hidden_size=hidden_size, seed=10)
     for i in range(num_iterations):
@@ -52,12 +52,15 @@ def main():
     #print(net.U)
     #print()
 
-    print(net.predict(X))
+    # print(net.predict(X))
     #dist = net.predict_proba(X)
     #print(dist)
     #P = numpy.zeros(dist.shape)
     #P[range(X.shape[0]), numpy.argmax(dist, axis=1)] = 1
     #print(P)
+    Y = net.predict(X)
+    for x, y in zip(X, Y):
+        print("%s -> %s" % (x, y))
 
 
 if __name__ == "__main__":

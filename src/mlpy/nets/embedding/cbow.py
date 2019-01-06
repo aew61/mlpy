@@ -6,19 +6,18 @@ import sys
 
 _cd_ = os.path.dirname(os.path.abspath(__file__))
 _net_dir_ = os.path.join(_cd_, "..")
-_src_dir_ = os.path.join(_cd_, "..", "..")
-for _dir_ in [_cd_, _net_dir_, _src_dir_]:
+# _src_dir_ = os.path.join(_cd_, "..", "..")
+for _dir_ in [_cd_, _net_dir_]: #, _src_dir_]:
     if _dir_ not in sys.path:
         sys.path.append(_dir_)
+# del _src_dir_
 del _net_dir_
-del _src_dir_
 del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-import activation_functions as af
+import activations as af
 import ann
-import core
 
 
 class cbow(ann.ann):
@@ -31,15 +30,16 @@ class cbow(ann.ann):
         self.vocab_size = vocab_size
         self.biases = [numpy.zeros(b.shape) for b in self.biases]
 
+
     def avg_context(self, X):
-        return numpy.mean([X[numpy.arange(X.shape[0]), i*self.vocab_size:(i+1)*self.vocab_size]
+        return numpy.mean([X[:, i*self.vocab_size:(i+1)*self.vocab_size]
                           for i in range(self.context_size)], axis=0)
 
     def cost_function(self, X, y):
-
-        zs, _ = self.complete_feed_forward(X)
-        z = zs[-1]
-        return numpy.sum(numpy.log(numpy.sum(numpy.exp(z), axis=1))) - numpy.sum(z[y == 1])
+        _, as_ = self.complete_feed_forward(X)
+        # z = zs[-1]
+        # return numpy.sum(numpy.log(numpy.sum(numpy.exp(z), axis=1))) - numpy.sum(z[y == 1])
+        return -numpy.sum(numpy.log(as_[-1][y==1]))
 
     def feed_forward(self, X):
         X_mean = self.avg_context(X)
@@ -52,8 +52,8 @@ class cbow(ann.ann):
         as_ = list([X_mean])
         a = X_mean
         z = None
-        for afunc, weight, bias in zip(self.afuncs, self.weights, self.biases):
-            z = numpy.dot(a, weight) + bias
+        for afunc, weight in zip(self.afuncs, self.weights):
+            z = numpy.dot(a, weight)
             zs.append(z)
             a = afunc(z)
             as_.append(a)

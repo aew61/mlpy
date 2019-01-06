@@ -18,7 +18,7 @@ del _cd_
 # PYTHON PROJECT IMPORTS
 import ppypartition
 import partition
-from data.features import ftypes
+import data.feature_types as ftypes
 import id3
 
 
@@ -33,21 +33,40 @@ def test_train(d, X, Y):
 
 
 def test_example(d):
-    X = numpy.array([[1, 0, 0],
-                     [1, 0, 1]])
-    for y in d.predict(X):
-        print(y)
+    # X = numpy.array([[1, 0, 0],
+    #                  [1, 0, 1]])
+    # print(d.predict(X))
+    # for y in d.predict(X):
+    #     print(y)
+
+    print(d.predict(numpy.array([[1,0,1]])))
+    print(d.predict(numpy.array([[1,0,0]])))
+
+    print(d.predict(numpy.array([[1,0,0], [1,0,1], [1,0,0], [1,0,1]])))
 
 
 def main():
 
     """"""
-    X = numpy.array([[1, 0, 0],
-                     [0, 1, 1],
-                     [1, 0, 1],
-                     [0, 1, 1]], dtype=float)
+    # X = numpy.array([[1, 0, 0],
+    #                  [0, 1, 1],
+    #                  [1, 0, 1],
+    #                  [0, 1, 1]], dtype=float)
+    # Y = numpy.array([[0],
+    #                  [0],
+    #                  [1],
+    #                  [1]], dtype=float)
+
+    X = numpy.array([[0,1,1],
+                     [1,1,1],
+                     [0,0,0],
+                     [1,1,0],
+                     [0,1,0],
+                     [1,0,1]], dtype=float)
     Y = numpy.array([[0],
                      [0],
+                     [0],
+                     [1],
                      [1],
                      [1]], dtype=float)
 
@@ -87,7 +106,7 @@ def main():
     feature_header = {0: ftypes.NOMINAL}
     """
 
-    d = id3.ID3Tree(feature_header=feature_header)
+    d = id3.id3tree(feature_header=feature_header)
 
     test_ig(d, X, Y)
     print()

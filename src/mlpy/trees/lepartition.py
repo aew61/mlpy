@@ -15,7 +15,7 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
-from features import ftypes
+import data.feature_types as ftypes
 
 
 class LEPartition(object):

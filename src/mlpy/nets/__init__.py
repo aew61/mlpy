@@ -10,6 +10,8 @@ del _cd_
 
 
 # PYTHON PROJECT IMPORTS
+import activations
+import losses
 from ann import ann  # noqa: E402
 from basenet import BaseNet  # noqa: E402
 from elm import elm  # noqa: E402

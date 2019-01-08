@@ -7,8 +7,8 @@ import random
 
 
 class QLearner(object):
-    def __init__(self, world_handle):
-        random.seed(12345)
+    def __init__(self, world_handle, seed=None):
+        random.seed(seed=seed)
         self._world_handle = world_handle
 
     def learn_online(self, epochs, iterations_per_epoch, q_function, update_function,

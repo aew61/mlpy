@@ -2,6 +2,7 @@
 import matplotlib.pyplot as plt
 import numpy
 import os
+from sklearn.manifold import TSNE
 import sys
 
 
@@ -29,7 +30,7 @@ def main():
     corpus = ["the cat sat on the mat",
               "the cat slept on the mat",
              ]
-    num_embedding_dims = 5
+    num_embedding_dims = 10
     context_size = 2
     tok = contok(context_size).tokenize(corpus)
     y, X = tok.transform(corpus)

@@ -12,5 +12,5 @@ def squared_difference(Y_hat, Y):
 
 def squared_difference_error(Y_hat, Y):
     assert(Y_hat.shape == Y.shape)
-    return Y_hat - Y
+    return (Y_hat - Y)/Y.shape[0]
 

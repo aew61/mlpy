@@ -51,7 +51,7 @@ class ann(basenet.BaseNet):
         return zs, as_
 
     def compute_error_vector(self, Y_hat, Y):
-        return Y_hat - Y
+        return (Y_hat - Y)
 
     def back_propagate(self, X, Y):
         new_settings = dict({"over": "ignore"})
